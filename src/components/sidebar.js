@@ -1,0 +1,49 @@
+import React from 'react';
+import { Link } from 'react-router-dom';
+import logo from '../assets/logos/logo-rond.png';
+
+const Sidebar = () => {
+  return (
+    <div className="h-screen flex flex-col w-64 bg-gray-800 text-white">
+      {/* Logo Section */}
+      <div className="flex items-center justify-center h-20 border-b border-gray-700">
+        {/* Remplacer ce texte par une image si besoin */}
+        <img 
+            src={logo}
+            alt="logo"
+            className="w-20 h-auto"
+        />
+      </div>
+
+      {/* Menu Links */}
+      <nav className="flex flex-col p-4 space-y-4">
+        <Link
+          to="/home"
+          className="hover:bg-gray-700 p-3 rounded transition-colors"
+        >
+          Accueil
+        </Link>
+        <Link
+          to="/AddProduct"
+          className="hover:bg-gray-700 p-3 rounded transition-colors"
+        >
+          ajouter un produit
+        </Link>
+        <Link
+          to="/UpdateProduct"
+          className="hover:bg-gray-700 p-3 rounded transition-colors"
+        >
+          modifier un produit
+        </Link>
+        <Link
+          to="/HistoryPurchase"
+          className="hover:bg-gray-700 p-3 rounded transition-colors"
+        >
+          historique de commande
+        </Link>
+      </nav>
+    </div>
+  );
+};
+
+export default Sidebar;
