@@ -78,8 +78,10 @@ const ListProduct = () => {
 
   return (
     <div className="flex">
-      <Sidebar />
-      <div className="md:w-3/4 w-full">
+      <div className="w-60">
+        <Sidebar />
+      </div>
+      <div className="flex-1 p-6">
         {loading ? (
           <p>Chargement des produits...</p>
         ) : (

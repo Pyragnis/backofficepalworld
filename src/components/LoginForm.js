@@ -1,13 +1,19 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const LoginForm = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const navigate = useNavigate(); // Hook pour la navigation
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log('Email:', email, 'Password:', password);
-    // Ajoutez ici la logique pour la soumission du formulaire
+    if (email === 'admin' && password === 'admin') {
+      navigate('/home'); // Redirection vers /home
+    } else {
+      console.log('Email ou mot de passe incorrect');
+      // Vous pouvez également afficher un message d'erreur ici
+    }
   };
 
   return (
@@ -23,7 +29,7 @@ const LoginForm = () => {
             Email
           </label>
           <input
-            type="email"
+            type="text" // Changer de email à text pour enlever la restriction
             id="email"
             className="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             value={email}
