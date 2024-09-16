@@ -100,7 +100,7 @@ const UpdProduct = () => {
         setSuccess(true);
         console.log('Produit ajouté:', productData);
       }
-      navigate(`/products`); // Redirige vers la liste des produits après la soumission
+      navigate(`/ListProduct`); // Redirige vers la liste des produits après la soumission
     } catch (error) {
       console.error('Erreur lors de l\'ajout ou de la mise à jour du produit:', error);
       setError('Une erreur est survenue lors de la soumission du produit.');
@@ -166,6 +166,7 @@ const UpdProduct = () => {
             onChange={handleChange}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg"
             min="0"
+            step="0.01"
             required
           />
         </div>

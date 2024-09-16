@@ -140,6 +140,7 @@ const AddProductForm = () => {
             onChange={handleChange}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg"
             min="0"
+            step="0.01"
             required
           />
         </div>
