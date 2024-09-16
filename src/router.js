@@ -6,6 +6,7 @@ import Login from './pages/Login';
 import AddProduct from './pages/AddProduct';
 import UpdateProduct from './pages/UpdateProduct';
 import HistoryPurchase from './pages/HistoryPurchase';
+import ListProduct from './pages/ListProduct';
 
 const AppRouter = () => {
   return (
@@ -17,6 +18,7 @@ const AppRouter = () => {
         <Route path="/AddProduct" element={<AddProduct />} />
         <Route path="/UpdateProduct" element={<UpdateProduct />} />
         <Route path="/HistoryPurchase" element={<HistoryPurchase />} />
+        <Route path="/ListProduct" element={<ListProduct />} />
    
 
         

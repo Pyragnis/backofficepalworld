@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useParams, useNavigate } from 'react-router-dom';
 
 const sizesOptions = ['XS', 'S', 'M', 'L', 'XL', '2XL'];
 
-const AddProductForm = () => {
+const UpdProduct = () => {
+  const { id } = useParams(); // Obtenir l'ID du produit depuis les paramètres de l'URL (pour l'édition)
+  const navigate = useNavigate(); // Pour rediriger après la soumission
   const [productData, setProductData] = useState({
     name: '',
     description: '',
@@ -18,7 +21,6 @@ const AddProductForm = () => {
       position: '',
       customizationSize: ['']
     }],
-    
   });
 
   const [categories, setCategories] = useState([]); // Stocker les catégories récupérées
@@ -32,16 +34,31 @@ const AddProductForm = () => {
       try {
         const response = await axios.get('http://localhost:3005/api/category');
         setCategories(response.data); // Stocker les catégories
-        
       } catch (error) {
         console.error("Erreur lors de la récupération des catégories:", error);
-        
       }
     };
     
     fetchCategories();
   }, []);
-  console.log('test de log cate'+categories);
+
+  // Si un ID est présent, récupérer les données du produit
+  useEffect(() => {
+    if (id) {
+      const fetchProduct = async () => {
+        try {
+          const response = await axios.get(`http://localhost:3005/api/products/${id}`);
+          setProductData(response.data);
+        } catch (error) {
+          console.error('Erreur lors de la récupération du produit:', error);
+          setError('Erreur lors de la récupération des informations du produit.');
+        }
+      };
+
+      fetchProduct();
+    }
+  }, [id]);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setProductData({ ...productData, [name]: value });
@@ -72,12 +89,21 @@ const AddProductForm = () => {
     setSuccess(false);
 
     try {
-      const response = await axios.post('http://localhost:3005/api/products', productData);
-      setSuccess(true);
-      console.log('Produit ajouté:', response.data);
+      if (id) {
+        // Si un ID est présent, mettre à jour le produit existant
+        await axios.put(`http://localhost:3005/api/products/${id}`, productData);
+        setSuccess(true);
+        console.log('Produit mis à jour:', productData);
+      } else {
+        // Sinon, ajouter un nouveau produit
+        await axios.post('http://localhost:3005/api/products', productData);
+        setSuccess(true);
+        console.log('Produit ajouté:', productData);
+      }
+      navigate(`/products`); // Redirige vers la liste des produits après la soumission
     } catch (error) {
-      console.error('Erreur lors de l\'ajout du produit:', error);
-      setError('Une erreur est survenue lors de l\'ajout du produit.');
+      console.error('Erreur lors de l\'ajout ou de la mise à jour du produit:', error);
+      setError('Une erreur est survenue lors de la soumission du produit.');
     } finally {
       setLoading(false);
     }
@@ -85,10 +111,10 @@ const AddProductForm = () => {
 
   return (
     <div className="flex flex-col w-full p-8 ml-1">
-      <h2 className="text-2xl font-bold mb-4">Ajouter un produit</h2>
+      <h2 className="text-2xl font-bold mb-4">{id ? 'Éditer le produit' : 'Ajouter un produit'}</h2>
 
       {error && <p className="text-red-500">{error}</p>}
-      {success && <p className="text-green-500">Produit ajouté avec succès !</p>}
+      {success && <p className="text-green-500">Produit {id ? 'mis à jour' : 'ajouté'} avec succès !</p>}
 
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Nom du produit */}
@@ -226,8 +252,6 @@ const AddProductForm = () => {
           </div>
         </div>
 
-        
-
         {/* Options de personnalisation */}
         <div>
           <label htmlFor="customizationOptions" className="block text-gray-700 font-bold">Options de personnalisation</label>
@@ -269,11 +293,11 @@ const AddProductForm = () => {
           type="submit"
           className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors"
         >
-          {loading ? 'Envoi en cours...' : 'Ajouter le produit'}
+          {loading ? 'Envoi en cours...' : (id ? 'Mettre à jour le produit' : 'Ajouter le produit')}
         </button>
       </form>
     </div>
   );
 };
 
-export default AddProductForm;
+export default UpdProduct;

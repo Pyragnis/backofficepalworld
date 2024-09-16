@@ -29,10 +29,10 @@ const Sidebar = () => {
           Ajouter un produit
         </Link>
         <Link
-          to="/UpdateProduct"
+          to="/ListProduct"
           className="hover:bg-gray-700 p-3 rounded transition-colors"
         >
-          Modifier un produit
+          liste des produits
         </Link>
         <Link
           to="/HistoryPurchase"
