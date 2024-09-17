@@ -1,5 +1,3 @@
-// OrderHistory.js
-
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
@@ -40,21 +38,31 @@ const OrderHistory = () => {
               <p>Montant Total: €{order.totalAmount.toFixed(2)}</p>
               
               <h4 className="font-semibold mt-2">Adresse de Livraison:</h4>
-              <p>{order.shippingAddress.name}</p>
-              <p>{order.shippingAddress.street}</p>
-              <p>{order.shippingAddress.city}</p>
-              <p>{order.shippingAddress.postalCode}</p>
+              <p>{order.shippingAddress?.name}</p>
+              <p>{order.shippingAddress?.street}</p>
+              <p>{order.shippingAddress?.city}</p>
+              <p>{order.shippingAddress?.postalCode}</p>
 
               <h4 className="font-semibold mt-4">Articles:</h4>
               <ul>
                 {order.items.map(item => (
-                  <li key={item.productId} className="border-b py-2">
-                    <p>Produit: {item.productId.name} (ID: {item.productId._id})</p>
+                  <li key={item.productId?._id || item._id} className="border-b py-2">
+                    <p>Produit: {item.productId?.name || 'Produit supprimé'} (ID: {item.productId?._id})</p>
                     <p>Quantité: {item.quantity}</p>
                     <p>Prix: €{item.price.toFixed(2)}</p>
                     <p>Couleur: {item.color}</p>
                     <p>Taille: {item.size}</p>
 
+                    {/* Vérification pour les articles achetés avec des tokens */}
+                    {item.isTokenPurchase ? (
+                      <p className="text-green-500 font-semibold">
+                        Achat via tokens : {item.tokensQuantity} tokens utilisés
+                      </p>
+                    ) : (
+                      <p>Achat avec de l'argent</p>
+                    )}
+
+                    {/* Options de personnalisation */}
                     {item.customizationOptions.length > 0 && (
                       <div>
                         <h5 className="font-semibold mt-2">Options de Personnalisation:</h5>
@@ -63,7 +71,13 @@ const OrderHistory = () => {
                             <li key={index} className="border-t py-1">
                               <p>Position: {option.position}</p>
                               <p>Tailles de Personnalisation: {option.customizationSize}</p>
-                              {option.imageUrl && <img src={option.imageUrl} alt={`Personnalisation ${index}`} className="w-20 h-20 object-cover mt-2" />}
+                              {option.imageUrl && (
+                                <img
+                                  src={option.imageUrl}
+                                  alt={`Personnalisation ${index}`}
+                                  className="w-20 h-20 object-cover mt-2"
+                                />
+                              )}
                             </li>
                           ))}
                         </ul>
