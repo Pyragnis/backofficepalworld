@@ -14,7 +14,7 @@ const AuthHandler = () => {
       const localCart = JSON.parse(localStorage.getItem('cart')) || [];
 
       // Envoyer le token et le panier local au backend
-      axios.post('http://localhost:3005/api/users/signin', {
+      axios.post(`http://localhost:${process.env.REACT_APP_PORT_BDD_API}/api/users/signin`, {
         token,
         localCart,
       })

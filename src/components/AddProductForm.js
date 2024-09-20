@@ -9,43 +9,41 @@ const AddProductForm = () => {
     description: '',
     characteristics: '',
     price: 0,
-    discountPrice:0,
+    discountPrice: 0,
     quantity: 0,
-    category: [], // Ajouter le champ catégorie
-    images: '',
-    colors: '',
+    category: [], 
+    images: [],
+    colors: [''], 
     sizes: [],
-    isPromo: false, // Nouveau champ pour la promotion
+    isPromo: false,
     customizationOptions: [{
       position: '',
       customizationSize: ['']
     }],
   });
 
-  const [categories, setCategories] = useState([]); // Stocker les catégories récupérées
+  const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
 
-  // Récupérer les catégories depuis l'API au chargement du composant
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await axios.get('http://localhost:3005/api/category');
-        setCategories(response.data); // Stocker les catégories
+        const response = await axios.get(`http://localhost:${process.env.REACT_APP_PORT_BDD_API}/api/category`);
+        setCategories(response.data);
       } catch (error) {
         console.error("Erreur lors de la récupération des catégories:", error);
       }
     };
-    
     fetchCategories();
   }, []);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setProductData({ 
-      ...productData, 
-      [name]: type === 'checkbox' ? checked : value // Gérer les champs texte et checkbox
+    setProductData({
+      ...productData,
+      [name]: type === 'checkbox' ? checked : value
     });
   };
 
@@ -54,9 +52,9 @@ const AddProductForm = () => {
       const sizes = [...prevData.sizes];
       const sizeIndex = sizes.indexOf(size);
       if (sizeIndex > -1) {
-        sizes.splice(sizeIndex, 1); // Retirer la taille
+        sizes.splice(sizeIndex, 1);
       } else {
-        sizes.push(size); // Ajouter la taille
+        sizes.push(size);
       }
       return { ...prevData, sizes };
     });
@@ -67,6 +65,73 @@ const AddProductForm = () => {
     setProductData({ ...productData, category: selectedCategories });
   };
 
+    // Gestion dynamique des images
+    const handleImageChange = (index, value) => {
+      const updatedImages = [...productData.images];
+      updatedImages[index] = value;
+      setProductData({ ...productData, images: updatedImages });
+    };
+  
+    const handleAddImage = () => {
+      setProductData((prevData) => ({
+        ...prevData,
+        images: [...prevData.images, '']
+      }));
+    };
+  
+    const handleRemoveImage = (index) => {
+      const updatedImages = [...productData.images];
+      updatedImages.splice(index, 1);
+      setProductData({ ...productData, images: updatedImages });
+    };
+
+  // Gestion dynamique des couleurs
+  const handleColorChange = (index, value) => {
+    const updatedColors = [...productData.colors];
+    updatedColors[index] = value;
+    setProductData({ ...productData, colors: updatedColors });
+  };
+
+  const handleAddColor = () => {
+    setProductData((prevData) => ({
+      ...prevData,
+      colors: [...prevData.colors, '']
+    }));
+  };
+
+  const handleRemoveColor = (index) => {
+    const updatedColors = [...productData.colors];
+    updatedColors.splice(index, 1);
+    setProductData({ ...productData, colors: updatedColors });
+  };
+
+  // Gestion dynamique des options de personnalisation
+  const handleCustomizationChange = (index, field, value) => {
+    const updatedOptions = [...productData.customizationOptions];
+    updatedOptions[index][field] = value;
+    setProductData({ ...productData, customizationOptions: updatedOptions });
+  };
+
+  const handleCustomizationSizeChange = (index, value) => {
+    const updatedOptions = [...productData.customizationOptions];
+    const sizesArray = value.split(',').map(size => size.trim());
+    updatedOptions[index].customizationSize = sizesArray;
+    setProductData({ ...productData, customizationOptions: updatedOptions });
+  };
+
+  const handleAddCustomizationOption = () => {
+    setProductData((prevData) => ({
+      ...prevData,
+      customizationOptions: [...prevData.customizationOptions, { position: '', customizationSize: [''] }]
+    }));
+  };
+
+  const handleRemoveCustomizationOption = (index) => {
+    const updatedOptions = [...productData.customizationOptions];
+    updatedOptions.splice(index, 1);
+    setProductData({ ...productData, customizationOptions: updatedOptions });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -74,7 +139,7 @@ const AddProductForm = () => {
     setSuccess(false);
 
     try {
-      const response = await axios.post('http://localhost:3005/api/products', productData);
+      const response = await axios.post(`http://localhost:${process.env.REACT_APP_PORT_BDD_API}/api/products`, productData);
       setSuccess(true);
       console.log('Produit ajouté:', response.data);
     } catch (error) {
@@ -146,6 +211,7 @@ const AddProductForm = () => {
             required
           />
         </div>
+        
         {/* DiscountPrix */}
         <div>
           <label htmlFor="price" className="block text-gray-700 font-bold">Prix promotion</label>
@@ -211,29 +277,61 @@ const AddProductForm = () => {
         {/* Images */}
         <div>
           <label htmlFor="images" className="block text-gray-700 font-bold">Images</label>
-          <input
-            type="text"
-            id="images"
-            name="images"
-            value={productData.images}
-            onChange={handleChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-          />
-          <p className="text-sm text-gray-500">Séparez les URL d'images par des virgules</p>
+          {productData.images.map((image, index) => (
+            <div key={index} className="flex items-center space-x-2">
+              <input
+                type="text"
+                value={image}
+                onChange={(e) => handleImageChange(index, e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                placeholder="URL de l'image"
+              />
+              <button
+                type="button"
+                onClick={() => handleRemoveImage(index)}
+                className="text-red-500"
+              >
+                Supprimer
+              </button>
+            </div>
+          ))}
+          <button
+            type="button"
+            onClick={handleAddImage}
+            className="mt-2 px-4 py-2 bg-blue-500 text-white font-semibold rounded-lg"
+          >
+            Ajouter une image
+          </button>
         </div>
 
         {/* Couleurs */}
         <div>
           <label htmlFor="colors" className="block text-gray-700 font-bold">Couleurs</label>
-          <input
-            type="text"
-            id="colors"
-            name="colors"
-            value={productData.colors}
-            onChange={handleChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-          />
-          <p className="text-sm text-gray-500">Séparez les couleurs par des virgules</p>
+          {productData.colors.map((color, index) => (
+            <div key={index} className="flex items-center space-x-2">
+              <input
+                type="text"
+                value={color}
+                onChange={(e) => handleColorChange(index, e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                placeholder="Couleur"
+              />
+              <button
+                type="button"
+                onClick={() => handleRemoveColor(index)}
+                className="text-red-500"
+              >
+                Supprimer
+              </button>
+            </div>
+          ))}
+          <button
+            type="button"
+            onClick={handleAddColor}
+            className="mt-2 px-4 py-2 bg-blue-500 text-white font-semibold rounded-lg"
+          >
+            Ajouter une couleur
+          </button>
         </div>
 
         {/* Tailles */}
@@ -267,36 +365,35 @@ const AddProductForm = () => {
                   type="text"
                   name={`position-${index}`}
                   value={option.position}
-                  onChange={(e) => {
-                    const newOptions = [...productData.customizationOptions];
-                    newOptions[index].position = e.target.value;
-                    setProductData({ ...productData, customizationOptions: newOptions });
-                  }}
+                  onChange={(e) => handleCustomizationChange(index, 'position', e.target.value)}
                   placeholder="Position"
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg"
                 />
-
-                <div>
-                  <label htmlFor={`customizationSize-${index}`} className="block text-gray-700 font-bold">Taille de personnalisation</label>
-                  <select
-                    id={`customizationSize-${index}`}
-                    name={`customizationSize-${index}`}
-                    value={option.customizationSize[0]} // Modifier pour prendre en compte la première option
-                    onChange={(e) => {
-                      const newOptions = [...productData.customizationOptions];
-                      newOptions[index].customizationSize = [e.target.value];
-                      setProductData({ ...productData, customizationOptions: newOptions });
-                    }}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-                  >
-                    {sizesOptions.map(size => (
-                      <option key={size} value={size}>{size}</option>
-                    ))}
-                  </select>
-                </div>
+                <input
+                  type="text"
+                  name={`customizationSize-${index}`}
+                  value={option.customizationSize.join(', ')}
+                  onChange={(e) => handleCustomizationSizeChange(index, e.target.value)}
+                  placeholder="Tailles de personnalisation (séparées par des virgules)"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                />
+                <button
+                  type="button"
+                  onClick={() => handleRemoveCustomizationOption(index)}
+                  className="text-red-500"
+                >
+                  Supprimer
+                </button>
               </div>
             ))}
           </div>
+          <button
+            type="button"
+            onClick={handleAddCustomizationOption}
+            className="mt-2 px-4 py-2 bg-blue-500 text-white font-semibold rounded-lg"
+          >
+            Ajouter une option de personnalisation
+          </button>
         </div>
 
         <button

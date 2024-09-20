@@ -34,7 +34,7 @@ const UpdProduct = () => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await axios.get('http://localhost:3005/api/category');
+        const response = await axios.get(`http://localhost:${process.env.REACT_APP_PORT_BDD_API}/api/category`);
         setCategories(response.data); // Stocker les catégories
       } catch (error) {
         console.error("Erreur lors de la récupération des catégories:", error);
@@ -49,7 +49,7 @@ const UpdProduct = () => {
     if (id) {
       const fetchProduct = async () => {
         try {
-          const response = await axios.get(`http://localhost:3005/api/products/${id}`);
+          const response = await axios.get(`http://localhost:${process.env.REACT_APP_PORT_BDD_API}/api/products/${id}`);
           setProductData(response.data);
         } catch (error) {
           console.error('Erreur lors de la récupération du produit:', error);
@@ -93,12 +93,12 @@ const UpdProduct = () => {
     try {
       if (id) {
         // Si un ID est présent, mettre à jour le produit existant
-        await axios.put(`http://localhost:3005/api/products/${id}`, productData);
+        await axios.put(`http://localhost:${process.env.REACT_APP_PORT_BDD_API}/api/products/${id}`, productData);
         setSuccess(true);
         console.log('Produit mis à jour:', productData);
       } else {
         // Sinon, ajouter un nouveau produit
-        await axios.post('http://localhost:3005/api/products', productData);
+        await axios.post(`http://localhost:${process.env.REACT_APP_PORT_BDD_API}/api/products`, productData);
         setSuccess(true);
         console.log('Produit ajouté:', productData);
       }

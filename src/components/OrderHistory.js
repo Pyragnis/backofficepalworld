@@ -9,7 +9,7 @@ const OrderHistory = () => {
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const response = await axios.get('http://localhost:3005/api/orders');
+        const response = await axios.get(`http://localhost:${process.env.REACT_APP_PORT_BDD_API}/api/orders`);
         setOrders(response.data);
       } catch (error) {
         setError('Erreur lors de la récupération des commandes');

@@ -19,7 +19,7 @@ const ListProduct = () => {
 
   const fetchProducts = async (page = 1) => {
     try {
-      const response = await axios.get('http://localhost:3005/api/products', {
+      const response = await axios.get(`http://localhost:${process.env.REACT_APP_PORT_BDD_API}/api/products`, {
         params: { ...filters, category, page, limit: productsPerPage }
       });
       setProducts(response.data.products || []);
@@ -50,7 +50,7 @@ const ListProduct = () => {
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`http://localhost:3005/api/products/${id}`);
+      await axios.delete(`http://localhost:${process.env.REACT_APP_PORT_BDD_API}/api/products/${id}`);
       setProducts(products.filter(product => product._id !== id)); // Remove deleted product from state
     } catch (error) {
       console.error('Erreur lors de la suppression du produit:', error);
