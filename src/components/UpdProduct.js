@@ -12,11 +12,13 @@ const UpdProduct = () => {
     description: '',
     characteristics: '',
     price: 0,
+    discountPrice:0,
     quantity: 0,
     category: [], // Ajouter le champ catégorie
     images: '',
     colors: '',
     sizes: [],
+    isPromo: undefined,
     customizationOptions: [{
       position: '',
       customizationSize: ['']
@@ -170,6 +172,21 @@ const UpdProduct = () => {
             required
           />
         </div>
+        {/* DiscountPrix */}
+        <div>
+          <label htmlFor="discountPrice" className="block text-gray-700 font-bold">Prix promotion</label>
+          <input
+            type="number"
+            id="discountPrice"
+            name="discountPrice"
+            value={productData.discountPrice}
+            onChange={handleChange}
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+            min="0"
+            step="0.01"
+            required
+          />
+        </div>
 
         {/* Quantité */}
         <div>
@@ -185,6 +202,18 @@ const UpdProduct = () => {
             required
           />
         </div>
+        {/* Promotion */}
+          <div>
+            <label htmlFor="isPromo" className="block text-gray-700 font-bold">Produit en promotion</label>
+            <input
+              type="checkbox"
+              id="isPromo"
+              name="isPromo"
+              checked={productData.isPromo}
+              onChange={(e) => setProductData({ ...productData, isPromo: e.target.checked })}
+              className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+            />
+          </div>
 
         {/* Catégories */}
         <div>

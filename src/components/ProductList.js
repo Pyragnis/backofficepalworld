@@ -13,7 +13,8 @@ const ProductList = ({ products, currentPage, totalPages, onPageChange, onDelete
               id={product._id}
               image={product.images[0] || 'comingsoon.jpg'}
               title={product.name}
-              price={product.price}
+              price={product.discountPrice ? product.discountPrice : product.price}
+              oldPrice={product.discountPrice ? product.price : null}
               onDelete={onDelete}
               onEdit={onEdit}
             />

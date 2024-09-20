@@ -9,16 +9,17 @@ const AddProductForm = () => {
     description: '',
     characteristics: '',
     price: 0,
+    discountPrice:0,
     quantity: 0,
     category: [], // Ajouter le champ catégorie
     images: '',
     colors: '',
     sizes: [],
+    isPromo: false, // Nouveau champ pour la promotion
     customizationOptions: [{
       position: '',
       customizationSize: ['']
     }],
-    
   });
 
   const [categories, setCategories] = useState([]); // Stocker les catégories récupérées
@@ -32,19 +33,20 @@ const AddProductForm = () => {
       try {
         const response = await axios.get('http://localhost:3005/api/category');
         setCategories(response.data); // Stocker les catégories
-        
       } catch (error) {
         console.error("Erreur lors de la récupération des catégories:", error);
-        
       }
     };
     
     fetchCategories();
   }, []);
-  console.log('test de log cate'+categories);
+
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setProductData({ ...productData, [name]: value });
+    const { name, value, type, checked } = e.target;
+    setProductData({ 
+      ...productData, 
+      [name]: type === 'checkbox' ? checked : value // Gérer les champs texte et checkbox
+    });
   };
 
   const handleSizeToggle = (size) => {
@@ -52,9 +54,9 @@ const AddProductForm = () => {
       const sizes = [...prevData.sizes];
       const sizeIndex = sizes.indexOf(size);
       if (sizeIndex > -1) {
-        sizes.splice(sizeIndex, 1); // Remove size
+        sizes.splice(sizeIndex, 1); // Retirer la taille
       } else {
-        sizes.push(size); // Add size
+        sizes.push(size); // Ajouter la taille
       }
       return { ...prevData, sizes };
     });
@@ -144,6 +146,21 @@ const AddProductForm = () => {
             required
           />
         </div>
+        {/* DiscountPrix */}
+        <div>
+          <label htmlFor="price" className="block text-gray-700 font-bold">Prix promotion</label>
+          <input
+            type="number"
+            id="discountPrice"
+            name="discountPrice"
+            value={productData.discountPrice}
+            onChange={handleChange}
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+            min="0"
+            step="0.01"
+            required
+          />
+        </div>
 
         {/* Quantité */}
         <div>
@@ -157,6 +174,19 @@ const AddProductForm = () => {
             className="w-full px-3 py-2 border border-gray-300 rounded-lg"
             min="0"
             required
+          />
+        </div>
+
+        {/* Promo */}
+        <div>
+          <label htmlFor="isPromo" className="block text-gray-700 font-bold">En promotion</label>
+          <input
+            type="checkbox"
+            id="isPromo"
+            name="isPromo"
+            checked={productData.isPromo}
+            onChange={handleChange}
+            className="w-4 h-4"
           />
         </div>
 
@@ -227,8 +257,6 @@ const AddProductForm = () => {
           </div>
         </div>
 
-        
-
         {/* Options de personnalisation */}
         <div>
           <label htmlFor="customizationOptions" className="block text-gray-700 font-bold">Options de personnalisation</label>
@@ -246,21 +274,26 @@ const AddProductForm = () => {
                   }}
                   placeholder="Position"
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-                  required
                 />
-                <input
-                  type="text"
-                  name={`customizationSize-${index}`}
-                  value={option.customizationSize.join(', ')}
-                  onChange={(e) => {
-                    const newOptions = [...productData.customizationOptions];
-                    newOptions[index].customizationSize = e.target.value.split(', ');
-                    setProductData({ ...productData, customizationOptions: newOptions });
-                  }}
-                  placeholder="Tailles de personnalisation (séparées par des virgules)"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-                  required
-                />
+
+                <div>
+                  <label htmlFor={`customizationSize-${index}`} className="block text-gray-700 font-bold">Taille de personnalisation</label>
+                  <select
+                    id={`customizationSize-${index}`}
+                    name={`customizationSize-${index}`}
+                    value={option.customizationSize[0]} // Modifier pour prendre en compte la première option
+                    onChange={(e) => {
+                      const newOptions = [...productData.customizationOptions];
+                      newOptions[index].customizationSize = [e.target.value];
+                      setProductData({ ...productData, customizationOptions: newOptions });
+                    }}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                  >
+                    {sizesOptions.map(size => (
+                      <option key={size} value={size}>{size}</option>
+                    ))}
+                  </select>
+                </div>
               </div>
             ))}
           </div>
@@ -268,9 +301,10 @@ const AddProductForm = () => {
 
         <button
           type="submit"
-          className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors"
+          className="w-full py-2 px-4 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600 transition-colors"
+          disabled={loading}
         >
-          {loading ? 'Envoi en cours...' : 'Ajouter le produit'}
+          {loading ? 'Ajout en cours...' : 'Ajouter le produit'}
         </button>
       </form>
     </div>
