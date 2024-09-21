@@ -65,6 +65,12 @@ const OrderHistory = () => {
     }
   };
 
+    // Fonction pour réinitialiser la recherche
+    const resetSearch = () => {
+      setSearchQuery(''); // Réinitialiser la barre de recherche
+      setSearchResults([]); // Réinitialiser les résultats de recherche
+    };
+
   // Calcule le nombre total de pages
   const totalPages = Math.ceil(orders.length / ordersPerPage);
 
@@ -93,6 +99,9 @@ const OrderHistory = () => {
         />
         <button onClick={handleSearch} className="ml-2 bg-sky-600 text-white px-4 py-2 rounded-lg">
           Rechercher
+        </button>
+        <button onClick={resetSearch} className="ml-2 bg-gray-300 text-gray-800 px-4 py-2 rounded-lg">
+          Réinitialiser
         </button>
       </div>
 
