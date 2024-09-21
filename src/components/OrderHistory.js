@@ -187,7 +187,7 @@ const OrderHistory = () => {
         <>
           {/* Affichage des commandes paginées normales */}
           {currentOrders.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
               {currentOrders.map((order) => (
                 <div key={order._id} className="bg-white shadow-md rounded-lg p-6">
                   <h3 className="text-xl font-semibold mb-2 text-sky-600">Commande #{order._id.substring(0, 8)}</h3>

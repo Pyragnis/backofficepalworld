@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { MdDeleteOutline } from "react-icons/md";
 
 const sizesOptions = ['XS', 'S', 'M', 'L', 'XL', '2XL'];
 
@@ -11,9 +12,9 @@ const AddProductForm = () => {
     price: 0,
     discountPrice: 0,
     quantity: 0,
-    category: [], 
+    category: [],
     images: [],
-    colors: [''], 
+    colors: [''],
     sizes: [],
     isPromo: false,
     customizationOptions: [{
@@ -65,25 +66,25 @@ const AddProductForm = () => {
     setProductData({ ...productData, category: selectedCategories });
   };
 
-    // Gestion dynamique des images
-    const handleImageChange = (index, value) => {
-      const updatedImages = [...productData.images];
-      updatedImages[index] = value;
-      setProductData({ ...productData, images: updatedImages });
-    };
-  
-    const handleAddImage = () => {
-      setProductData((prevData) => ({
-        ...prevData,
-        images: [...prevData.images, '']
-      }));
-    };
-  
-    const handleRemoveImage = (index) => {
-      const updatedImages = [...productData.images];
-      updatedImages.splice(index, 1);
-      setProductData({ ...productData, images: updatedImages });
-    };
+  // Gestion dynamique des images
+  const handleImageChange = (index, value) => {
+    const updatedImages = [...productData.images];
+    updatedImages[index] = value;
+    setProductData({ ...productData, images: updatedImages });
+  };
+
+  const handleAddImage = () => {
+    setProductData((prevData) => ({
+      ...prevData,
+      images: [...prevData.images, '']
+    }));
+  };
+
+  const handleRemoveImage = (index) => {
+    const updatedImages = [...productData.images];
+    updatedImages.splice(index, 1);
+    setProductData({ ...productData, images: updatedImages });
+  };
 
   // Gestion dynamique des couleurs
   const handleColorChange = (index, value) => {
@@ -151,13 +152,13 @@ const AddProductForm = () => {
   };
 
   return (
-    <div className="flex flex-col w-full p-8 ml-1">
-      <h2 className="text-2xl font-bold mb-4">Ajouter un produit</h2>
+    <div className="flex flex-col w-full p-4 sm:p-6 md:p-8 lg:p-10 xl:p-12 bg-gray-100">
+      <h2 className="text-2xl md:text-3xl xl:text-4xl font-bold mb-4">Ajouter un produit</h2>
 
       {error && <p className="text-red-500">{error}</p>}
       {success && <p className="text-green-500">Produit ajouté avec succès !</p>}
 
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit} className="space-y-6 bg-white p-4 md:p-6 rounded-lg shadow-lg">
         {/* Nom du produit */}
         <div>
           <label htmlFor="name" className="block text-gray-700 font-bold">Nom du produit</label>
@@ -196,64 +197,67 @@ const AddProductForm = () => {
           />
         </div>
 
-        {/* Prix */}
-        <div>
-          <label htmlFor="price" className="block text-gray-700 font-bold">Prix</label>
-          <input
-            type="number"
-            id="price"
-            name="price"
-            value={productData.price}
-            onChange={handleChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-            min="0"
-            step="0.01"
-            required
-          />
-        </div>
-        
-        {/* DiscountPrix */}
-        <div>
-          <label htmlFor="price" className="block text-gray-700 font-bold">Prix promotion</label>
-          <input
-            type="number"
-            id="discountPrice"
-            name="discountPrice"
-            value={productData.discountPrice}
-            onChange={handleChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-            min="0"
-            step="0.01"
-            required
-          />
-        </div>
-
-        {/* Quantité */}
-        <div>
-          <label htmlFor="quantity" className="block text-gray-700 font-bold">Quantité</label>
-          <input
-            type="number"
-            id="quantity"
-            name="quantity"
-            value={productData.quantity}
-            onChange={handleChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-            min="0"
-            required
-          />
+        {/* Prix et Quantité */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label htmlFor="price" className="block text-gray-700 font-bold">Prix</label>
+            <input
+              type="number"
+              id="price"
+              name="price"
+              value={productData.price}
+              onChange={handleChange}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+              min="0"
+              step="0.01"
+              required
+            />
+          </div>
+          <div>
+            <label htmlFor="quantity" className="block text-gray-700 font-bold">Quantité</label>
+            <input
+              type="number"
+              id="quantity"
+              name="quantity"
+              value={productData.quantity}
+              onChange={handleChange}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+              min="0"
+              required
+            />
+          </div>
         </div>
 
-        {/* Promo */}
-        <div>
-          <label htmlFor="isPromo" className="block text-gray-700 font-bold">En promotion</label>
-          <input
-            type="checkbox"
-            id="isPromo"
-            name="isPromo"
-            checked={productData.isPromo}
-            onChange={handleChange}
-            className="w-4 h-4"
-          />
+        {/* Section pour la promotion */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Champ pour le prix promotionnel */}
+          <div>
+            <label htmlFor="discountPrice" className="block text-gray-700 font-bold">Prix promotion</label>
+            <input
+              type="number"
+              id="discountPrice"
+              name="discountPrice"
+              value={productData.discountPrice}
+              onChange={handleChange}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+              min="0"
+              step="0.01"
+              disabled={!productData.isPromo}
+            />
+          </div>
+
+          {/* Checkbox pour la promotion */}
+          <div className="flex items-center">
+            <input
+              type="checkbox"
+              id="isPromo"
+              name="isPromo"
+              checked={productData.isPromo}
+              onChange={handleChange}
+              className="w-4 h-4"
+            />
+            <label htmlFor="isPromo" className="ml-2 text-gray-700 font-bold">En promotion</label>
+          </div>
         </div>
 
         {/* Catégories */}
@@ -291,7 +295,7 @@ const AddProductForm = () => {
                 onClick={() => handleRemoveImage(index)}
                 className="text-red-500"
               >
-                Supprimer
+                <MdDeleteOutline />
               </button>
             </div>
           ))}
@@ -321,7 +325,7 @@ const AddProductForm = () => {
                 onClick={() => handleRemoveColor(index)}
                 className="text-red-500"
               >
-                Supprimer
+                <MdDeleteOutline />
               </button>
             </div>
           ))}
