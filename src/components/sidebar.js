@@ -63,7 +63,7 @@ const Sidebar = () => {
           </Link>
           {/* Nouveau lien externe avec icône */}
           <a
-            href="http://localhost:3001"
+            href={`http://localhost:${process.env.REACT_APP_PORT_FRONT}`}
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center hover:bg-gray-700 p-3 rounded transition-colors"
