@@ -198,7 +198,9 @@ const AddProductForm = () => {
           <h3 className="text-xl font-bold mb-2">Informations générales</h3>
           {/* Nom du produit */}
           <div>
-            <label htmlFor="name" className="block text-gray-700 font-semibold">Nom du produit</label>
+            <label htmlFor="name" className="block text-gray-700 font-semibold">
+              Nom du produit <span className="text-red-500">*</span>
+            </label>
             <input
               type="text"
               id="name"
@@ -212,7 +214,9 @@ const AddProductForm = () => {
 
           {/* Description */}
           <div>
-            <label htmlFor="description" className="block text-gray-700 font-semibold mt-4">Description</label>
+            <label htmlFor="description" className="block text-gray-700 font-semibold mt-4">
+              Description <span className="text-red-500">*</span>
+            </label>
             <textarea
               id="description"
               name="description"
@@ -224,7 +228,9 @@ const AddProductForm = () => {
 
           {/* Caractéristiques */}
           <div>
-            <label htmlFor="characteristics" className="block text-gray-700 font-semibold">Caractéristiques</label>
+            <label htmlFor="characteristics" className="block text-gray-700 font-semibold">
+              Caractéristiques <span className="text-red-500">*</span>
+            </label>
             <textarea
               id="characteristics"
               name="characteristics"
@@ -240,7 +246,9 @@ const AddProductForm = () => {
           <h3 className="text-xl font-bold mb-2">Prix et Quantité</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label htmlFor="price" className="block text-gray-700 font-semibold">Prix</label>
+              <label htmlFor="price" className="block text-gray-700 font-semibold">
+                Prix <span className="text-red-500">*</span>
+              </label>
               <input
                 type="number"
                 id="price"
@@ -254,7 +262,9 @@ const AddProductForm = () => {
               />
             </div>
             <div>
-              <label htmlFor="quantity" className="block text-gray-700 font-semibold">Quantité</label>
+              <label htmlFor="quantity" className="block text-gray-700 font-semibold">
+                Quantité <span className="text-red-500">*</span>
+              </label>
               <input
                 type="number"
                 id="quantity"
@@ -304,7 +314,9 @@ const AddProductForm = () => {
         {/* Section Catégories */}
         <section>
           <h3 className="text-xl font-bold mb-2">Catégories</h3>
-          <label htmlFor="category" className="block text-gray-700 font-semibold">Catégories</label>
+          <label htmlFor="category" className="block text-gray-700 font-semibold">
+            Catégories <span className="text-red-500">*</span>
+          </label>
           <select
             id="category"
             name="category"
@@ -321,7 +333,9 @@ const AddProductForm = () => {
 
         {/* Section Couleurs */}
         <section>
-          <h3 className="text-xl font-bold mb-2">Couleurs</h3>
+          <h3 className="text-xl font-bold mb-2">
+            Couleurs <span className="text-red-500">*</span>
+          </h3>
           {productData.colors.map((color, index) => (
             <div key={index} className="flex items-center space-x-2">
               <input
@@ -347,7 +361,9 @@ const AddProductForm = () => {
 
         {/* Section Tailles */}
         <section>
-          <h3 className="text-xl font-bold mb-2">Tailles</h3>
+          <h3 className="text-xl font-bold mb-2">
+            Tailles <span className="text-red-500">*</span>
+          </h3>
           {productData.sizes.map((size, index) => (
             <div key={index} className="flex items-center space-x-2 mb-2">
               <input
@@ -378,7 +394,9 @@ const AddProductForm = () => {
 
         {/* Section Images */}
         <section>
-          <h3 className="text-xl font-bold mb-2">Images</h3>
+          <h3 className="text-xl font-bold mb-2">
+            Images <span className="text-red-500">*</span>
+          </h3>
           {productData.images.map((image, index) => (
             <div key={index} className="flex items-center space-x-2">
               <input
@@ -404,7 +422,9 @@ const AddProductForm = () => {
 
         {/* Section Options de personnalisation */}
         <section>
-          <h3 className="text-xl font-bold mb-2">Options de personnalisation</h3>
+          <h3 className="text-xl font-bold mb-2">
+            Options de personnalisation <span className="text-red-500">*</span>
+          </h3>
           {productData.customizationOptions.map((option, index) => (
             <div key={index} className="space-y-2">
               <input
