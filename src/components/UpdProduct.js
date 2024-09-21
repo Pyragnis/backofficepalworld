@@ -5,46 +5,45 @@ import { useParams, useNavigate } from 'react-router-dom';
 const sizesOptions = ['XS', 'S', 'M', 'L', 'XL', '2XL'];
 
 const UpdProduct = () => {
-  const { id } = useParams(); // Obtenir l'ID du produit depuis les paramètres de l'URL (pour l'édition)
-  const navigate = useNavigate(); // Pour rediriger après la soumission
+  const { id } = useParams();
+  const navigate = useNavigate();
   const [productData, setProductData] = useState({
     name: '',
     description: '',
     characteristics: '',
     price: 0,
-    discountPrice:0,
+    discountPrice: 0,
     quantity: 0,
-    category: [], // Ajouter le champ catégorie
-    images: '',
-    colors: '',
+    category: [],
+    images: [''],  // Initialiser comme un tableau pour gérer dynamiquement
+    colors: [''],  // Initialiser comme un tableau pour gérer dynamiquement
     sizes: [],
-    isPromo: undefined,
+    isPromo: false,
     customizationOptions: [{
       position: '',
       customizationSize: ['']
     }],
   });
 
-  const [categories, setCategories] = useState([]); // Stocker les catégories récupérées
+  const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
 
-  // Récupérer les catégories depuis l'API au chargement du composant
+  // Récupérer les catégories depuis l'API
   useEffect(() => {
     const fetchCategories = async () => {
       try {
         const response = await axios.get(`http://localhost:${process.env.REACT_APP_PORT_BDD_API}/api/category`);
-        setCategories(response.data); // Stocker les catégories
+        setCategories(response.data);
       } catch (error) {
         console.error("Erreur lors de la récupération des catégories:", error);
       }
     };
-    
     fetchCategories();
   }, []);
 
-  // Si un ID est présent, récupérer les données du produit
+  // Récupérer les données du produit existant si un ID est présent
   useEffect(() => {
     if (id) {
       const fetchProduct = async () => {
@@ -62,8 +61,11 @@ const UpdProduct = () => {
   }, [id]);
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setProductData({ ...productData, [name]: value });
+    const { name, value, type, checked } = e.target;
+    setProductData({
+      ...productData,
+      [name]: type === 'checkbox' ? checked : value
+    });
   };
 
   const handleSizeToggle = (size) => {
@@ -71,9 +73,9 @@ const UpdProduct = () => {
       const sizes = [...prevData.sizes];
       const sizeIndex = sizes.indexOf(size);
       if (sizeIndex > -1) {
-        sizes.splice(sizeIndex, 1); // Remove size
+        sizes.splice(sizeIndex, 1); // Retirer la taille
       } else {
-        sizes.push(size); // Add size
+        sizes.push(size); // Ajouter la taille
       }
       return { ...prevData, sizes };
     });
@@ -84,6 +86,73 @@ const UpdProduct = () => {
     setProductData({ ...productData, category: selectedCategories });
   };
 
+  // Gestion dynamique des images
+  const handleImageChange = (index, value) => {
+    const updatedImages = [...productData.images];
+    updatedImages[index] = value;
+    setProductData({ ...productData, images: updatedImages });
+  };
+
+  const handleAddImage = () => {
+    setProductData((prevData) => ({
+      ...prevData,
+      images: [...prevData.images, '']
+    }));
+  };
+
+  const handleRemoveImage = (index) => {
+    const updatedImages = [...productData.images];
+    updatedImages.splice(index, 1);
+    setProductData({ ...productData, images: updatedImages });
+  };
+
+  // Gestion dynamique des couleurs
+  const handleColorChange = (index, value) => {
+    const updatedColors = [...productData.colors];
+    updatedColors[index] = value;
+    setProductData({ ...productData, colors: updatedColors });
+  };
+
+  const handleAddColor = () => {
+    setProductData((prevData) => ({
+      ...prevData,
+      colors: [...prevData.colors, '']
+    }));
+  };
+
+  const handleRemoveColor = (index) => {
+    const updatedColors = [...productData.colors];
+    updatedColors.splice(index, 1);
+    setProductData({ ...productData, colors: updatedColors });
+  };
+
+  // Gestion dynamique des options de personnalisation
+  const handleCustomizationChange = (index, field, value) => {
+    const updatedOptions = [...productData.customizationOptions];
+    updatedOptions[index][field] = value;
+    setProductData({ ...productData, customizationOptions: updatedOptions });
+  };
+
+  const handleCustomizationSizeChange = (index, value) => {
+    const updatedOptions = [...productData.customizationOptions];
+    const sizesArray = value.split(',').map(size => size.trim());
+    updatedOptions[index].customizationSize = sizesArray;
+    setProductData({ ...productData, customizationOptions: updatedOptions });
+  };
+
+  const handleAddCustomizationOption = () => {
+    setProductData((prevData) => ({
+      ...prevData,
+      customizationOptions: [...prevData.customizationOptions, { position: '', customizationSize: [''] }]
+    }));
+  };
+
+  const handleRemoveCustomizationOption = (index) => {
+    const updatedOptions = [...productData.customizationOptions];
+    updatedOptions.splice(index, 1);
+    setProductData({ ...productData, customizationOptions: updatedOptions });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -92,17 +161,17 @@ const UpdProduct = () => {
 
     try {
       if (id) {
-        // Si un ID est présent, mettre à jour le produit existant
+        // Mettre à jour le produit existant
         await axios.put(`http://localhost:${process.env.REACT_APP_PORT_BDD_API}/api/products/${id}`, productData);
         setSuccess(true);
         console.log('Produit mis à jour:', productData);
       } else {
-        // Sinon, ajouter un nouveau produit
+        // Ajouter un nouveau produit
         await axios.post(`http://localhost:${process.env.REACT_APP_PORT_BDD_API}/api/products`, productData);
         setSuccess(true);
         console.log('Produit ajouté:', productData);
       }
-      navigate(`/ListProduct`); // Redirige vers la liste des produits après la soumission
+      navigate(`/ListProduct`);
     } catch (error) {
       console.error('Erreur lors de l\'ajout ou de la mise à jour du produit:', error);
       setError('Une erreur est survenue lors de la soumission du produit.');
@@ -172,7 +241,8 @@ const UpdProduct = () => {
             required
           />
         </div>
-        {/* DiscountPrix */}
+        
+        {/* Prix promotion */}
         <div>
           <label htmlFor="discountPrice" className="block text-gray-700 font-bold">Prix promotion</label>
           <input
@@ -202,18 +272,19 @@ const UpdProduct = () => {
             required
           />
         </div>
-        {/* Promotion */}
-          <div>
-            <label htmlFor="isPromo" className="block text-gray-700 font-bold">Produit en promotion</label>
-            <input
-              type="checkbox"
-              id="isPromo"
-              name="isPromo"
-              checked={productData.isPromo}
-              onChange={(e) => setProductData({ ...productData, isPromo: e.target.checked })}
-              className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-            />
-          </div>
+
+        {/* Promo */}
+        <div>
+          <label htmlFor="isPromo" className="block text-gray-700 font-bold">En promotion</label>
+          <input
+            type="checkbox"
+            id="isPromo"
+            name="isPromo"
+            checked={productData.isPromo}
+            onChange={handleChange}
+            className="w-4 h-4"
+          />
+        </div>
 
         {/* Catégories */}
         <div>
@@ -236,29 +307,61 @@ const UpdProduct = () => {
         {/* Images */}
         <div>
           <label htmlFor="images" className="block text-gray-700 font-bold">Images</label>
-          <input
-            type="text"
-            id="images"
-            name="images"
-            value={productData.images}
-            onChange={handleChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-          />
-          <p className="text-sm text-gray-500">Séparez les URL d'images par des virgules</p>
+          {productData.images.map((image, index) => (
+            <div key={index} className="flex items-center space-x-2">
+              <input
+                type="text"
+                value={image}
+                onChange={(e) => handleImageChange(index, e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                placeholder="URL de l'image"
+              />
+              <button
+                type="button"
+                onClick={() => handleRemoveImage(index)}
+                className="text-red-500"
+              >
+                Supprimer
+              </button>
+            </div>
+          ))}
+          <button
+            type="button"
+            onClick={handleAddImage}
+            className="mt-2 px-4 py-2 bg-blue-500 text-white font-semibold rounded-lg"
+          >
+            Ajouter une image
+          </button>
         </div>
 
         {/* Couleurs */}
         <div>
           <label htmlFor="colors" className="block text-gray-700 font-bold">Couleurs</label>
-          <input
-            type="text"
-            id="colors"
-            name="colors"
-            value={productData.colors}
-            onChange={handleChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-          />
-          <p className="text-sm text-gray-500">Séparez les couleurs par des virgules</p>
+          {productData.colors.map((color, index) => (
+            <div key={index} className="flex items-center space-x-2">
+              <input
+                type="text"
+                value={color}
+                onChange={(e) => handleColorChange(index, e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                placeholder="Couleur"
+              />
+              <button
+                type="button"
+                onClick={() => handleRemoveColor(index)}
+                className="text-red-500"
+              >
+                Supprimer
+              </button>
+            </div>
+          ))}
+          <button
+            type="button"
+            onClick={handleAddColor}
+            className="mt-2 px-4 py-2 bg-blue-500 text-white font-semibold rounded-lg"
+          >
+            Ajouter une couleur
+          </button>
         </div>
 
         {/* Tailles */}
@@ -292,11 +395,7 @@ const UpdProduct = () => {
                   type="text"
                   name={`position-${index}`}
                   value={option.position}
-                  onChange={(e) => {
-                    const newOptions = [...productData.customizationOptions];
-                    newOptions[index].position = e.target.value;
-                    setProductData({ ...productData, customizationOptions: newOptions });
-                  }}
+                  onChange={(e) => handleCustomizationChange(index, 'position', e.target.value)}
                   placeholder="Position"
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg"
                   required
@@ -305,25 +404,36 @@ const UpdProduct = () => {
                   type="text"
                   name={`customizationSize-${index}`}
                   value={option.customizationSize.join(', ')}
-                  onChange={(e) => {
-                    const newOptions = [...productData.customizationOptions];
-                    newOptions[index].customizationSize = e.target.value.split(', ');
-                    setProductData({ ...productData, customizationOptions: newOptions });
-                  }}
+                  onChange={(e) => handleCustomizationSizeChange(index, e.target.value)}
                   placeholder="Tailles de personnalisation (séparées par des virgules)"
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg"
                   required
                 />
+                <button
+                  type="button"
+                  onClick={() => handleRemoveCustomizationOption(index)}
+                  className="text-red-500"
+                >
+                  Supprimer
+                </button>
               </div>
             ))}
           </div>
+          <button
+            type="button"
+            onClick={handleAddCustomizationOption}
+            className="mt-2 px-4 py-2 bg-blue-500 text-white font-semibold rounded-lg"
+          >
+            Ajouter une option de personnalisation
+          </button>
         </div>
 
         <button
           type="submit"
-          className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors"
+          className="w-full py-2 px-4 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600 transition-colors"
+          disabled={loading}
         >
-          {loading ? 'Envoi en cours...' : (id ? 'Mettre à jour le produit' : 'Ajouter le produit')}
+          {loading ? 'Envoi en cours...' : 'Mettre à jour le produit'}
         </button>
       </form>
     </div>

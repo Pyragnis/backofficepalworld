@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams,useNavigate } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import Sidebar from '../components/sidebar';
 import axios from 'axios';
 import ProductList from '../components/ProductList';
@@ -7,20 +7,17 @@ import ProductList from '../components/ProductList';
 const ListProduct = () => {
   const navigate = useNavigate();
   const { category } = useParams();
-  const [filters, setFilters] = useState({});
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
-  const [isScreenSmall, setIsScreenSmall] = useState(window.innerWidth < 1024);
 
   const productsPerPage = 8;
 
   const fetchProducts = async (page = 1) => {
     try {
       const response = await axios.get(`http://localhost:${process.env.REACT_APP_PORT_BDD_API}/api/products`, {
-        params: { ...filters, category, page, limit: productsPerPage }
+        params: { category, page, limit: productsPerPage }
       });
       setProducts(response.data.products || []);
       setTotalPages(response.data.totalPages || 1);
@@ -34,13 +31,7 @@ const ListProduct = () => {
 
   useEffect(() => {
     fetchProducts(currentPage);
-  }, [filters, category, currentPage]);
-
-  const handleFilterChange = (newFilters) => {
-    setFilters(newFilters);
-    setCurrentPage(1); // Reset to the first page when applying filters
-    setIsFilterModalOpen(false); // Close modal after applying filters
-  };
+  }, [category, currentPage]);
 
   const handlePageChange = (newPage) => {
     if (newPage > 0 && newPage <= totalPages) {
@@ -51,7 +42,7 @@ const ListProduct = () => {
   const handleDelete = async (id) => {
     try {
       await axios.delete(`http://localhost:${process.env.REACT_APP_PORT_BDD_API}/api/products/${id}`);
-      setProducts(products.filter(product => product._id !== id)); // Remove deleted product from state
+      setProducts(products.filter(product => product._id !== id));
     } catch (error) {
       console.error('Erreur lors de la suppression du produit:', error);
     }
@@ -60,21 +51,6 @@ const ListProduct = () => {
   const handleEdit = (id) => {
     navigate(`/UpdateProduct/${id}`);
   };
-
-
-  useEffect(() => {
-    const handleResize = () => {
-      setIsScreenSmall(window.innerWidth < 1024);
-      if (window.innerWidth >= 1024) {
-        setIsFilterModalOpen(false);
-      }
-    };
-
-    window.addEventListener('resize', handleResize);
-    return () => {
-      window.removeEventListener('resize', handleResize);
-    };
-  }, []);
 
   return (
     <div className="flex">

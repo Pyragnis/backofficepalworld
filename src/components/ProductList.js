@@ -1,13 +1,45 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import ProductCard from './ProductCard';
+import axios from 'axios';
 
 const ProductList = ({ products, currentPage, totalPages, onPageChange, onDelete, onEdit }) => {
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filteredProducts, setFilteredProducts] = useState(products);
+
+  useEffect(() => {
+    const fetchSearchedProducts = async () => {
+      try {
+        if (searchQuery.length >= 2) {
+          const response = await axios.get(`http://localhost:${process.env.REACT_APP_PORT_BDD_API}/api/search?query=${searchQuery}`);
+          setFilteredProducts(response.data);
+        } else {
+          setFilteredProducts(products);
+        }
+      } catch (error) {
+        console.error('Erreur lors de la recherche des produits :', error);
+      }
+    };
+
+    fetchSearchedProducts();
+  }, [searchQuery, products]);
 
   return (
-    <div className="px-4"> {/* Ajout de padding sur les côtés */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6"> {/* Augmenter la valeur de gap */}
-        {products.length > 0 ? (
-          products.map((product) => (
+    <div className="px-4">
+      {/* Barre de recherche */}
+      <div className="mb-4">
+        <input
+          type="text"
+          placeholder="Rechercher un produit par nom"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="w-full p-2 border border-gray-300 rounded-md"
+        />
+      </div>
+
+      {/* Grille des produits */}
+      <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        {filteredProducts.length > 0 ? (
+          filteredProducts.map((product) => (
             <ProductCard
               key={product._id}
               id={product._id}
