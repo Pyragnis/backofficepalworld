@@ -1,6 +1,6 @@
 import React from 'react';
 import Sidebar from '../components/sidebar';
-import logo from '../assets/logos/logo-rond.png'; // Assurez-vous que le chemin du logo est correct
+import logo from '../assets/logos/logo-rond.png';
 
 const Home = () => {
   return (

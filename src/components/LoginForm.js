@@ -4,15 +4,14 @@ import { useNavigate } from 'react-router-dom';
 const LoginForm = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const navigate = useNavigate(); // Hook pour la navigation
+  const navigate = useNavigate();
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (email === 'admin' && password === 'admin') {
-      navigate('/home'); // Redirection vers /home
+      navigate('/home'); 
     } else {
       console.log('Email ou mot de passe incorrect');
-      // Vous pouvez également afficher un message d'erreur ici
     }
   };
 
@@ -29,7 +28,7 @@ const LoginForm = () => {
             Email
           </label>
           <input
-            type="text" // Changer de email à text pour enlever la restriction
+            type="text" 
             id="email"
             className="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             value={email}

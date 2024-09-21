@@ -17,7 +17,6 @@ const ProductCard = ({ id, image, title, price, oldPrice, onDelete, onEdit }) =>
         </div>
       </Link>
 
-      {/* Disposition en colonne pour les petits écrans */}
       <div className="flex flex-col lg:flex-row space-y-2 lg:space-y-0 lg:space-x-2 mt-4">
         <button
           onClick={() => onEdit(id)}

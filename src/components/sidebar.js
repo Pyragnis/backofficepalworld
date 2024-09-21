@@ -32,7 +32,7 @@ const Sidebar = () => {
           to="/ListProduct"
           className="hover:bg-gray-700 p-3 rounded transition-colors"
         >
-          liste des produits
+          Liste des produits
         </Link>
         <Link
           to="/HistoryPurchase"
