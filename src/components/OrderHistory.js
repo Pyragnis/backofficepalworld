@@ -9,7 +9,9 @@ const OrderHistory = () => {
   const ordersPerPage = 6;
   const [users, setUsers] = useState({});
   const [searchQuery, setSearchQuery] = useState('');
-  const [searchResults, setSearchResults] = useState([]); // Pour gérer les résultats de recherche
+  const [searchResults, setSearchResults] = useState([]);
+
+  const visiblePageLimit = 5;
 
   const fetchUserInfo = async (userId) => {
     try {
@@ -26,7 +28,7 @@ const OrderHistory = () => {
       try {
         const response = await axios.get(`http://localhost:${process.env.REACT_APP_PORT_BDD_API}/api/orders`);
         const orders = response.data;
-
+  
         const usersInfo = {};
         for (const order of orders) {
           const userId = typeof order.userId === 'object' ? order.userId._id : order.userId;
@@ -35,7 +37,7 @@ const OrderHistory = () => {
             usersInfo[userId] = userInfo;
           }
         }
-
+  
         setUsers(usersInfo);
         setOrders(orders);
       } catch (error) {
@@ -45,11 +47,10 @@ const OrderHistory = () => {
         setLoading(false);
       }
     };
-
+  
     fetchOrders();
   }, []);
 
-  // Fonction de recherche par ID de commande
   const handleSearch = async () => {
     if (searchQuery.length < 2) {
       alert('Veuillez entrer au moins 2 caractères pour effectuer une recherche.');
@@ -58,35 +59,34 @@ const OrderHistory = () => {
 
     try {
       const response = await axios.get(`http://localhost:${process.env.REACT_APP_PORT_BDD_API}/api/search?query=${searchQuery}`);
-      setSearchResults([response.data]); // Stocker le résultat de recherche dans searchResults
+      setSearchResults([response.data]);
     } catch (error) {
       console.error('Erreur lors de la recherche de la commande:', error);
-      setSearchResults([]); // Réinitialiser les résultats de recherche en cas d'erreur
+      setSearchResults([]);
     }
   };
 
-    // Fonction pour réinitialiser la recherche
-    const resetSearch = () => {
-      setSearchQuery(''); // Réinitialiser la barre de recherche
-      setSearchResults([]); // Réinitialiser les résultats de recherche
-    };
+  const resetSearch = () => {
+    setSearchQuery('');
+    setSearchResults([]);
+  };
 
-  // Calcule le nombre total de pages
   const totalPages = Math.ceil(orders.length / ordersPerPage);
-
-  // Obtenir les commandes de la page actuelle
-  const currentOrders = orders.slice(
-    (currentPage - 1) * ordersPerPage,
-    currentPage * ordersPerPage
-  );
+  const currentOrders = orders.slice((currentPage - 1) * ordersPerPage, currentPage * ordersPerPage);
 
   const handlePageChange = (pageNumber) => {
-    setCurrentPage(pageNumber);
+    if (pageNumber >= 1 && pageNumber <= totalPages) {
+      setCurrentPage(pageNumber);
+    }
   };
+
+  // Déterminer la plage des pages à afficher
+  const startPage = Math.max(1, currentPage - Math.floor(visiblePageLimit / 2));
+  const endPage = Math.min(totalPages, startPage + visiblePageLimit - 1);
 
   return (
     <div className="p-6 bg-gray-100 min-h-screen">
-      <h2 className="text-3xl font-bold mb-6 text-center">Historique des Commandes</h2>
+      <h2 className="text-3xl font-bold mb-6 text-center">Historique des commandes</h2>
 
       {/* Champ de recherche */}
       <div className="flex justify-center mb-4">
@@ -134,7 +134,7 @@ const OrderHistory = () => {
             {/* Affichage de l'adresse de livraison si ce n'est pas un achat via tokens */}
             {!searchResults[0].items.some(item => item.isTokenPurchase) && searchResults[0].shippingAddress && (
               <div className="mb-4">
-                <h4 className="font-semibold text-gray-700">Adresse de Livraison :</h4>
+                <h4 className="font-semibold text-gray-700">Adresse de livraison :</h4>
                 <p>{searchResults[0].shippingAddress.name}</p>
                 <p>{searchResults[0].shippingAddress.street}</p>
                 <p>{searchResults[0].shippingAddress.city}</p>
@@ -149,34 +149,24 @@ const OrderHistory = () => {
                 <li key={item.productId?._id || item._id} className="bg-gray-100 rounded-md p-2">
                   <div className="flex justify-between">
                     <div>
-                      <p className="font-semibold">{item.productId?.name || 'Produit supprimé'}</p>
+                      <p className="font-semibold">{item.productId?.name || 'Produit acheté'}</p>
                       <p>Quantité : {item.quantity}</p>
                       <p>Prix : €{item.price.toFixed(2)}</p>
 
-                      {/* Affichage spécifique pour les commandes en argent */}
-                      {!item.isTokenPurchase && (
-                        <>
-                          <p>Couleur : {item.color}</p>
-                          <p>Taille : {item.size}</p>
-                        </>
-                      )}
-
-                      {/* Affichage pour les achats via tokens */}
-                      {item.isTokenPurchase ? (
+                      {item.isTokenPurchase && (
                         <p className="text-green-500 font-semibold">
                           Pack de tokens achetés : {item.tokensQuantity} pack
                         </p>
-                      ) : (
-                        <p>Achat avec de l'argent</p>
                       )}
-                    </div>
-                    {item.imageUrl && (
-                      <img
-                        src={item.imageUrl}
-                        alt={`Produit ${item.productId?.name}`}
-                        className="w-16 h-16 object-cover ml-4"
-                      />
-                    )}
+                      </div>
+
+                      {item.imageUrl && (
+                        <img
+                          src={item.imageUrl}
+                          alt={`Produit ${item.productId?.name}`}
+                          className="w-16 h-16 object-cover ml-4"
+                        />
+                      )}
                   </div>
                 </li>
               ))}
@@ -192,7 +182,7 @@ const OrderHistory = () => {
                 <div key={order._id} className="bg-white shadow-md rounded-lg p-6">
                   <h3 className="text-xl font-semibold mb-2 text-sky-600">Commande #{order._id.substring(0, 8)}</h3>
                   <p className="text-gray-500 mb-2">Date : {new Date(order.createdAt).toLocaleDateString()}</p>
-                  <p className="font-semibold text-lg mb-2">Montant Total : €{order.totalAmount.toFixed(2)}</p>
+                  <p className="font-semibold text-lg mb-2">Montant total : €{order.totalAmount.toFixed(2)}</p>
 
                   <div className="mb-4">
                     <h4 className="font-semibold text-gray-700">Informations sur l'utilisateur :</h4>
@@ -209,7 +199,7 @@ const OrderHistory = () => {
 
                   {!order.items.some(item => item.isTokenPurchase) && order.shippingAddress && (
                     <div className="mb-4">
-                      <h4 className="font-semibold text-gray-700">Adresse de Livraison :</h4>
+                      <h4 className="font-semibold text-gray-700">Adresse de livraison :</h4>
                       <p>{order.shippingAddress.name}</p>
                       <p>{order.shippingAddress.street}</p>
                       <p>{order.shippingAddress.city}</p>
@@ -223,7 +213,7 @@ const OrderHistory = () => {
                       <li key={item.productId?._id || item._id} className="bg-gray-100 rounded-md p-2">
                         <div className="flex justify-between">
                           <div>
-                            <p className="font-semibold">{item.productId?.name || 'Pack de tokens acheté'}</p>
+                            <p className="font-semibold">{item.productId?.name || 'Tokens'}</p>
                             <p>Quantité : {item.quantity}</p>
                             <p>Prix : €{item.price.toFixed(2)}</p>
 
@@ -231,6 +221,20 @@ const OrderHistory = () => {
                               <>
                                 <p>Couleur : {item.color}</p>
                                 <p>Taille : {item.size}</p>
+
+                                {item.customizationOptions.length  > 0 && (
+                                  <div className='border-t mt-2'>
+                                  <h5 className="font-semibold mt-2">Options de personnalisation:</h5>
+                                  <ul>
+                                    {item.customizationOptions.map((option, index) => (
+                                      <li key={index} className="py-1">
+                                        <p>Position : {option.position}</p>
+                                        <p>Tailles de personnalisation : {option.customizationSize}</p>
+                                      </li>
+                                    ))}
+                                  </ul>
+                                </div>
+                                )}
                               </>
                             )}
 
@@ -263,17 +267,33 @@ const OrderHistory = () => {
           >
             Précédent
           </button>
-          {Array.from({ length: totalPages }, (_, index) => (
+
+          {startPage > 1 && (
+            <button className="px-3 py-1 mx-1 border rounded-lg bg-gray-200 text-gray-700" onClick={() => handlePageChange(1)}>
+              1
+            </button>
+          )}
+          {startPage > 2 && <span className="px-3 py-1">...</span>}
+
+          {Array.from({ length: endPage - startPage + 1 }, (_, index) => startPage + index).map((pageNumber) => (
             <button
-              key={index}
-              onClick={() => handlePageChange(index + 1)}
-              className={`px-4 py-2 mx-1 border rounded-lg ${
-                index + 1 === currentPage ? 'bg-sky-600 text-white' : 'bg-gray-200 text-gray-700'
+              key={pageNumber}
+              onClick={() => handlePageChange(pageNumber)}
+              className={`px-3 py-1 mx-1 border rounded-lg ${
+                pageNumber === currentPage ? 'bg-sky-600 text-white' : 'bg-gray-200 text-gray-700'
               } hover:bg-sky-500 hover:text-white transition-colors duration-300`}
             >
-              {index + 1}
+              {pageNumber}
             </button>
           ))}
+
+          {endPage < totalPages - 1 && <span className="px-3 py-1">...</span>}
+          {endPage < totalPages && (
+            <button className="px-3 py-1 mx-1 border rounded-lg bg-gray-200 text-gray-700" onClick={() => handlePageChange(totalPages)}>
+              {totalPages}
+            </button>
+          )}
+
           <button
             onClick={() => handlePageChange(currentPage + 1)}
             disabled={currentPage === totalPages}

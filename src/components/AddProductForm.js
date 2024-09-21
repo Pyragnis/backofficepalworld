@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 import { MdDeleteOutline } from "react-icons/md";
 
-const sizesOptions = ['XS', 'S', 'M', 'L', 'XL', '2XL'];
-
 const AddProductForm = () => {
+  const navigate = useNavigate();
   const [productData, setProductData] = useState({
     name: '',
     description: '',
@@ -12,17 +12,17 @@ const AddProductForm = () => {
     price: 0,
     discountPrice: 0,
     quantity: 0,
-    category: [],
+    category: '',
     images: [],
-    colors: [''],
+    colors: [],
     sizes: [],
     isPromo: false,
-    customizationOptions: [{
-      position: '',
-      customizationSize: ['']
+    customizationOptions: [{ 
+      position: '', 
+      customizationSize: [] 
     }],
   });
-
+  
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -32,14 +32,18 @@ const AddProductForm = () => {
     const fetchCategories = async () => {
       try {
         const response = await axios.get(`http://localhost:${process.env.REACT_APP_PORT_BDD_API}/api/category`);
-        setCategories(response.data);
+        const formattedCategories = response.data.map(cat => ({
+          ...cat,
+          name: cat.name.charAt(0).toUpperCase() + cat.name.slice(1),
+        }));
+        setCategories(formattedCategories);
       } catch (error) {
         console.error("Erreur lors de la récupération des catégories:", error);
       }
     };
     fetchCategories();
   }, []);
-
+  
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     setProductData({
@@ -48,24 +52,31 @@ const AddProductForm = () => {
     });
   };
 
-  const handleSizeToggle = (size) => {
-    setProductData(prevData => {
-      const sizes = [...prevData.sizes];
-      const sizeIndex = sizes.indexOf(size);
-      if (sizeIndex > -1) {
-        sizes.splice(sizeIndex, 1);
-      } else {
-        sizes.push(size);
-      }
-      return { ...prevData, sizes };
-    });
-  };
-
+  // Gestion dynamique des catégories
   const handleCategoryChange = (e) => {
-    const selectedCategories = Array.from(e.target.selectedOptions, option => option.value);
-    setProductData({ ...productData, category: selectedCategories });
-  };
+    const selectedCategoryId = e.target.value;
+    setProductData({ ...productData, category: [selectedCategoryId] });
+  };  
 
+  const handleCustomSizeChange = (index, value) => {
+    const updatedSizes = [...productData.sizes];
+    updatedSizes[index] = value;
+    setProductData({ ...productData, sizes: updatedSizes });
+  };
+  
+  const handleAddCustomSize = () => {
+    setProductData((prevData) => ({
+      ...prevData,
+      sizes: [...prevData.sizes, '']
+    }));
+  };
+  
+  const handleRemoveCustomSize = (index) => {
+    const updatedSizes = [...productData.sizes];
+    updatedSizes.splice(index, 1);
+    setProductData({ ...productData, sizes: updatedSizes });
+  };
+  
   // Gestion dynamique des images
   const handleImageChange = (index, value) => {
     const updatedImages = [...productData.images];
@@ -133,198 +144,194 @@ const AddProductForm = () => {
     setProductData({ ...productData, customizationOptions: updatedOptions });
   };
 
+  const handleBackToList = () => {
+    navigate('/ListProduct');
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    if (!productData.category) {
+      setError('Veuillez sélectionner une catégorie.');
+      return;
+    }
     setLoading(true);
     setError(null);
     setSuccess(false);
-
+  
     try {
       const response = await axios.post(`http://localhost:${process.env.REACT_APP_PORT_BDD_API}/api/products`, productData);
       setSuccess(true);
-      console.log('Produit ajouté:', response.data);
     } catch (error) {
-      console.error('Erreur lors de l\'ajout du produit:', error);
-      setError('Une erreur est survenue lors de l\'ajout du produit.');
+      if (error.response && error.response.data) {
+        console.error('Erreur lors de l\'ajout du produit:', error.response.data);
+        setError(error.response.data.message || 'Une erreur est survenue lors de l\'ajout du produit.');
+      } else {
+        console.error('Erreur lors de l\'ajout du produit:', error);
+        setError('Une erreur est survenue lors de l\'ajout du produit.');
+      }
     } finally {
       setLoading(false);
     }
-  };
-
+  };  
+  
   return (
     <div className="flex flex-col w-full p-4 sm:p-6 md:p-8 lg:p-10 xl:p-12 bg-gray-100">
+
+      <div className="mb-4">
+        <button
+          onClick={handleBackToList}
+          className="px-4 py-2 bg-sky-600 text-white font-semibold rounded-lg hover:bg-sky-700 transition-colors"
+        >
+          Voir la liste des produits
+        </button>
+      </div>
+
       <h2 className="text-2xl md:text-3xl xl:text-4xl font-bold mb-4">Ajouter un produit</h2>
 
-      {error && <p className="text-red-500">{error}</p>}
-      {success && <p className="text-green-500">Produit ajouté avec succès !</p>}
+      {error && <div className="bg-red-100 text-red-700 p-4 rounded">{error}</div>}
+      {success && <div className="bg-green-100 text-green-700 p-4 rounded">Produit ajouté avec succès !</div>}
 
       <form onSubmit={handleSubmit} className="space-y-6 bg-white p-4 md:p-6 rounded-lg shadow-lg">
-        {/* Nom du produit */}
-        <div>
-          <label htmlFor="name" className="block text-gray-700 font-bold">Nom du produit</label>
-          <input
-            type="text"
-            id="name"
-            name="name"
-            value={productData.name}
-            onChange={handleChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-            required
-          />
-        </div>
-
-        {/* Description */}
-        <div>
-          <label htmlFor="description" className="block text-gray-700 font-bold">Description</label>
-          <textarea
-            id="description"
-            name="description"
-            value={productData.description}
-            onChange={handleChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-          />
-        </div>
-
-        {/* Caractéristiques */}
-        <div>
-          <label htmlFor="characteristics" className="block text-gray-700 font-bold">Caractéristiques</label>
-          <textarea
-            id="characteristics"
-            name="characteristics"
-            value={productData.characteristics}
-            onChange={handleChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-          />
-        </div>
-
-        {/* Prix et Quantité */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        
+        <section>
+          <h3 className="text-xl font-bold mb-2">Informations générales</h3>
+          {/* Nom du produit */}
           <div>
-            <label htmlFor="price" className="block text-gray-700 font-bold">Prix</label>
+            <label htmlFor="name" className="block text-gray-700 font-semibold">Nom du produit</label>
             <input
-              type="number"
-              id="price"
-              name="price"
-              value={productData.price}
+              type="text"
+              id="name"
+              name="name"
+              value={productData.name}
               onChange={handleChange}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-              min="0"
-              step="0.01"
               required
             />
           </div>
+
+          {/* Description */}
           <div>
-            <label htmlFor="quantity" className="block text-gray-700 font-bold">Quantité</label>
-            <input
-              type="number"
-              id="quantity"
-              name="quantity"
-              value={productData.quantity}
+            <label htmlFor="description" className="block text-gray-700 font-semibold mt-4">Description</label>
+            <textarea
+              id="description"
+              name="description"
+              value={productData.description}
               onChange={handleChange}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-              min="0"
-              required
             />
           </div>
-        </div>
 
-        {/* Section pour la promotion */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {/* Champ pour le prix promotionnel */}
+          {/* Caractéristiques */}
           <div>
-            <label htmlFor="discountPrice" className="block text-gray-700 font-bold">Prix promotion</label>
-            <input
-              type="number"
-              id="discountPrice"
-              name="discountPrice"
-              value={productData.discountPrice}
+            <label htmlFor="characteristics" className="block text-gray-700 font-semibold">Caractéristiques</label>
+            <textarea
+              id="characteristics"
+              name="characteristics"
+              value={productData.characteristics}
               onChange={handleChange}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-              min="0"
-              step="0.01"
-              disabled={!productData.isPromo}
             />
           </div>
+        </section>
 
-          {/* Checkbox pour la promotion */}
-          <div className="flex items-center">
-            <input
-              type="checkbox"
-              id="isPromo"
-              name="isPromo"
-              checked={productData.isPromo}
-              onChange={handleChange}
-              className="w-4 h-4"
-            />
-            <label htmlFor="isPromo" className="ml-2 text-gray-700 font-bold">En promotion</label>
+        {/* Section pour les prix */}
+        <section>
+          <h3 className="text-xl font-bold mb-2">Prix et Quantité</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label htmlFor="price" className="block text-gray-700 font-semibold">Prix</label>
+              <input
+                type="number"
+                id="price"
+                name="price"
+                value={productData.price}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                min="0"
+                step="0.01"
+                required
+              />
+            </div>
+            <div>
+              <label htmlFor="quantity" className="block text-gray-700 font-semibold">Quantité</label>
+              <input
+                type="number"
+                id="quantity"
+                name="quantity"
+                value={productData.quantity}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                min="0"
+                required
+              />
+            </div>
           </div>
-        </div>
+        </section>
 
-        {/* Catégories */}
-        <div>
-          <label htmlFor="category" className="block text-gray-700 font-bold">Catégories</label>
+        {/* Section pour les promotions */}
+        <section>
+          <h3 className="text-xl font-bold mb-2">Promotion</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label htmlFor="discountPrice" className="block text-gray-700 font-semibold">Prix promotion</label>
+              <input
+                type="number"
+                id="discountPrice"
+                name="discountPrice"
+                value={productData.discountPrice}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                min="0"
+                step="0.01"
+                disabled={!productData.isPromo}
+              />
+            </div>
+            <div className="flex items-center">
+              <input
+                type="checkbox"
+                id="isPromo"
+                name="isPromo"
+                checked={productData.isPromo}
+                onChange={handleChange}
+                className="w-4 h-4"
+              />
+              <label htmlFor="isPromo" className="ml-2 text-gray-700 font-semibold">En promotion</label>
+            </div>
+          </div>
+        </section>
+
+        {/* Section Catégories */}
+        <section>
+          <h3 className="text-xl font-bold mb-2">Catégories</h3>
+          <label htmlFor="category" className="block text-gray-700 font-semibold">Catégories</label>
           <select
             id="category"
             name="category"
-            multiple
             value={productData.category}
             onChange={handleCategoryChange}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg"
           >
+            <option value="" disabled>Sélectionnez une catégorie</option>
             {categories.map(category => (
               <option key={category._id} value={category._id}>{category.name}</option>
             ))}
           </select>
-          <p className="text-sm text-gray-500">Maintenez "Ctrl" pour sélectionner plusieurs catégories</p>
-        </div>
+        </section>
 
-        {/* Images */}
-        <div>
-          <label htmlFor="images" className="block text-gray-700 font-bold">Images</label>
-          {productData.images.map((image, index) => (
-            <div key={index} className="flex items-center space-x-2">
-              <input
-                type="text"
-                value={image}
-                onChange={(e) => handleImageChange(index, e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-                placeholder="URL de l'image"
-              />
-              <button
-                type="button"
-                onClick={() => handleRemoveImage(index)}
-                className="text-red-500"
-              >
-                <MdDeleteOutline />
-              </button>
-            </div>
-          ))}
-          <button
-            type="button"
-            onClick={handleAddImage}
-            className="mt-2 px-4 py-2 bg-blue-500 text-white font-semibold rounded-lg"
-          >
-            Ajouter une image
-          </button>
-        </div>
-
-        {/* Couleurs */}
-        <div>
-          <label htmlFor="colors" className="block text-gray-700 font-bold">Couleurs</label>
+        {/* Section Couleurs */}
+        <section>
+          <h3 className="text-xl font-bold mb-2">Couleurs</h3>
           {productData.colors.map((color, index) => (
             <div key={index} className="flex items-center space-x-2">
               <input
                 type="text"
                 value={color}
                 onChange={(e) => handleColorChange(index, e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg mb-2"
                 placeholder="Couleur"
               />
-              <button
-                type="button"
-                onClick={() => handleRemoveColor(index)}
-                className="text-red-500"
-              >
+              <button type="button" onClick={() => handleRemoveColor(index)} className="text-red-500">
                 <MdDeleteOutline />
               </button>
             </div>
@@ -332,77 +339,105 @@ const AddProductForm = () => {
           <button
             type="button"
             onClick={handleAddColor}
-            className="mt-2 px-4 py-2 bg-blue-500 text-white font-semibold rounded-lg"
+            className="mt-2 px-4 py-2 bg-sky-600 hover:bg-sky-700 text-white font-normal rounded-lg"
           >
             Ajouter une couleur
           </button>
-        </div>
+        </section>
 
-        {/* Tailles */}
-        <div>
-          <label htmlFor="sizes" className="block text-gray-700 font-bold">Tailles</label>
-          <div className="flex flex-wrap gap-2">
-            {sizesOptions.map(size => (
+        {/* Section Tailles */}
+        <section>
+          <h3 className="text-xl font-bold mb-2">Tailles</h3>
+          {productData.sizes.map((size, index) => (
+            <div key={index} className="flex items-center space-x-2 mb-2">
+              <input
+                type="text"
+                value={size}
+                onChange={(e) => handleCustomSizeChange(index, e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg mb-2"
+                placeholder="Taille personnalisée"
+              />
               <button
-                key={size}
                 type="button"
-                onClick={() => handleSizeToggle(size)}
-                className={`px-4 py-2 rounded border ${
-                  productData.sizes.includes(size)
-                    ? 'bg-blue-500 text-white border-blue-600'
-                    : 'bg-gray-200 text-gray-800 border-gray-400'
-                } hover:bg-blue-600 hover:border-blue-700 transition-colors`}
+                onClick={() => handleRemoveCustomSize(index)}
+                className="text-red-500"
               >
-                {size}
+                <MdDeleteOutline />
               </button>
-            ))}
-          </div>
-        </div>
+            </div>
+          ))}
+          <button
+            type="button"
+            onClick={handleAddCustomSize}
+            className="mt-2 px-4 py-2 bg-sky-600 hover:bg-sky-700 text-white font-normal rounded-lg"
+          >
+            Ajouter une taille
+          </button>
+        </section>
 
-        {/* Options de personnalisation */}
-        <div>
-          <label htmlFor="customizationOptions" className="block text-gray-700 font-bold">Options de personnalisation</label>
-          <div className="space-y-4">
-            {productData.customizationOptions.map((option, index) => (
-              <div key={index} className="space-y-2">
-                <input
-                  type="text"
-                  name={`position-${index}`}
-                  value={option.position}
-                  onChange={(e) => handleCustomizationChange(index, 'position', e.target.value)}
-                  placeholder="Position"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-                />
-                <input
-                  type="text"
-                  name={`customizationSize-${index}`}
-                  value={option.customizationSize.join(', ')}
-                  onChange={(e) => handleCustomizationSizeChange(index, e.target.value)}
-                  placeholder="Tailles de personnalisation (séparées par des virgules)"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-                />
-                <button
-                  type="button"
-                  onClick={() => handleRemoveCustomizationOption(index)}
-                  className="text-red-500"
-                >
-                  Supprimer
-                </button>
-              </div>
-            ))}
-          </div>
+
+        {/* Section Images */}
+        <section>
+          <h3 className="text-xl font-bold mb-2">Images</h3>
+          {productData.images.map((image, index) => (
+            <div key={index} className="flex items-center space-x-2">
+              <input
+                type="text"
+                value={image}
+                onChange={(e) => handleImageChange(index, e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg mb-2"
+                placeholder="URL de l'image"
+              />
+              <button type="button" onClick={() => handleRemoveImage(index)} className="text-red-500">
+                <MdDeleteOutline />
+              </button>
+            </div>
+          ))}
+          <button
+            type="button"
+            onClick={handleAddImage}
+            className="mt-2 px-4 py-2 bg-sky-600 hover:bg-sky-700 text-white font-normal rounded-lg"
+          >
+            Ajouter une image
+          </button>
+        </section>
+
+        {/* Section Options de personnalisation */}
+        <section>
+          <h3 className="text-xl font-bold mb-2">Options de personnalisation</h3>
+          {productData.customizationOptions.map((option, index) => (
+            <div key={index} className="space-y-2">
+              <input
+                type="text"
+                value={option.position}
+                onChange={(e) => handleCustomizationChange(index, 'position', e.target.value)}
+                placeholder="Position"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg mt-2"
+              />
+              <input
+                type="text"
+                value={option.customizationSize.join(', ')}
+                onChange={(e) => handleCustomizationSizeChange(index, e.target.value)}
+                placeholder="Tailles de personnalisation (séparées par des virgules)"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+              />
+              <button type="button" onClick={() => handleRemoveCustomizationOption(index)} className="text-red-500">
+                Supprimer
+              </button>
+            </div>
+          ))}
           <button
             type="button"
             onClick={handleAddCustomizationOption}
-            className="mt-2 px-4 py-2 bg-blue-500 text-white font-semibold rounded-lg"
+            className="mt-2 px-4 py-2 bg-sky-600 hover:bg-sky-700 text-white font-normal rounded-lg"
           >
             Ajouter une option de personnalisation
           </button>
-        </div>
+        </section>
 
         <button
           type="submit"
-          className="w-full py-2 px-4 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600 transition-colors"
+          className="w-full py-2 px-4 bg-sky-600 text-white font-semibold rounded-lg hover:bg-sky-700 transition-colors"
           disabled={loading}
         >
           {loading ? 'Ajout en cours...' : 'Ajouter le produit'}

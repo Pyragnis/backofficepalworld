@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import logo from '../assets/logos/logo-rond.png';
-import { FaBars, FaTimes } from 'react-icons/fa';
+import { FaBars, FaTimes, FaHome, FaPlus, FaList, FaHistory, FaExternalLinkAlt } from 'react-icons/fa';
 
 const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -35,32 +35,42 @@ const Sidebar = () => {
         <nav className="flex flex-col p-6 space-y-4">
           <Link
             to="/home"
-            className="hover:bg-gray-700 p-3 rounded transition-colors"
+            className="flex items-center hover:bg-gray-700 p-3 rounded transition-colors"
             onClick={toggleSidebar}
           >
-            Accueil
+            <FaHome className="mr-3" /> Accueil
           </Link>
           <Link
             to="/AddProduct"
-            className="hover:bg-gray-700 p-3 rounded transition-colors"
+            className="flex items-center hover:bg-gray-700 p-3 rounded transition-colors"
             onClick={toggleSidebar}
           >
-            Ajouter un produit
+            <FaPlus className="mr-3" /> Ajouter un produit
           </Link>
           <Link
             to="/ListProduct"
-            className="hover:bg-gray-700 p-3 rounded transition-colors"
+            className="flex items-center hover:bg-gray-700 p-3 rounded transition-colors"
             onClick={toggleSidebar}
           >
-            Liste des produits
+            <FaList className="mr-3" /> Liste des produits
           </Link>
           <Link
             to="/HistoryPurchase"
-            className="hover:bg-gray-700 p-3 rounded transition-colors"
+            className="flex items-center hover:bg-gray-700 p-3 rounded transition-colors"
             onClick={toggleSidebar}
           >
-            Historique de commande
+            <FaHistory className="mr-3" /> Historique de commande
           </Link>
+          {/* Nouveau lien externe avec icône */}
+          <a
+            href="http://localhost:3001"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center hover:bg-gray-700 p-3 rounded transition-colors"
+            onClick={toggleSidebar}
+          >
+            <FaExternalLinkAlt className="mr-3" /> Aller sur le e-shop
+          </a>
         </nav>
       </div>
 

@@ -20,7 +20,9 @@ const ProductList = ({ products, currentPage, totalPages, onPageChange, onDelete
       }
     };
 
-    fetchSearchedProducts();
+    const debounceTimeout = setTimeout(fetchSearchedProducts, 500); // Délais de 500ms
+
+    return () => clearTimeout(debounceTimeout); // Nettoyer le délai
   }, [searchQuery, products]);
 
   return (
@@ -56,7 +58,7 @@ const ProductList = ({ products, currentPage, totalPages, onPageChange, onDelete
         )}
       </div>
 
-      {/* Pagination */}
+      {/* Pagination améliorée */}
       {totalPages > 1 && (
         <div className="mt-6 flex justify-center space-x-2">
           <button
