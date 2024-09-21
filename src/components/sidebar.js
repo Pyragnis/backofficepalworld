@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import logo from '../assets/logos/logo-rond.png';
-import { FaBars, FaTimes, FaHome, FaPlus, FaList, FaHistory, FaExternalLinkAlt } from 'react-icons/fa';
+import { FaBars, FaTimes, FaHome, FaPlus, FaList, FaHistory, FaExternalLinkAlt, FaSortAlphaDown, FaUsers } from 'react-icons/fa';
 
 const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -34,28 +34,42 @@ const Sidebar = () => {
         {/* Menu Links */}
         <nav className="flex flex-col p-6 space-y-4">
           <Link
-            to="/home"
+            to="/dashboard"
             className="flex items-center hover:bg-gray-700 p-3 rounded transition-colors"
             onClick={toggleSidebar}
           >
-            <FaHome className="mr-3" /> Accueil
+            <FaHome className="mr-3" /> Dashboard
           </Link>
           <Link
-            to="/AddProduct"
+            to="/users"
+            className="flex items-center hover:bg-gray-700 p-3 rounded transition-colors"
+            onClick={toggleSidebar}
+          >
+            <FaUsers  className="mr-3" /> Liste des utilisateurs
+          </Link>
+          <Link
+            to="/categories"
+            className="flex items-center hover:bg-gray-700 p-3 rounded transition-colors"
+            onClick={toggleSidebar}
+          >
+            <FaSortAlphaDown   className="mr-3" /> Catégories
+          </Link>
+          <Link
+            to="/add-product"
             className="flex items-center hover:bg-gray-700 p-3 rounded transition-colors"
             onClick={toggleSidebar}
           >
             <FaPlus className="mr-3" /> Ajouter un produit
           </Link>
           <Link
-            to="/ListProduct"
+            to="/products-list"
             className="flex items-center hover:bg-gray-700 p-3 rounded transition-colors"
             onClick={toggleSidebar}
           >
             <FaList className="mr-3" /> Liste des produits
           </Link>
           <Link
-            to="/HistoryPurchase"
+            to="/purchase-history"
             className="flex items-center hover:bg-gray-700 p-3 rounded transition-colors"
             onClick={toggleSidebar}
           >

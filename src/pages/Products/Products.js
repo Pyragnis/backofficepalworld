@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import Sidebar from '../components/sidebar';
+import Sidebar from '../../components/sidebar';
 import axios from 'axios';
-import ProductList from '../components/ProductList';
+import ProductList from '../../components/Products/ProductList';
 
 const ListProduct = () => {
   const navigate = useNavigate();
@@ -74,7 +74,7 @@ const ListProduct = () => {
 
   // Fonction d'édition du produit
   const handleEdit = (id) => {
-    navigate(`/UpdateProduct/${id}`);
+    navigate(`/update-product/${id}`);
   };
 
   return (

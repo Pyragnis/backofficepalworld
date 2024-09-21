@@ -145,7 +145,7 @@ const AddProductForm = () => {
   };
 
   const handleBackToList = () => {
-    navigate('/ListProduct');
+    navigate('/products-list');
   };
 
   const handleSubmit = async (e) => {

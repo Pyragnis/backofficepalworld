@@ -1,8 +1,8 @@
 import React from 'react';
 import Sidebar from '../components/sidebar';
-import OrderHistory from '../components/OrderHistory';
+import OrderHistory from '../components/Orders/OrderHistory';
 
-const HistoryPurchase = () => {
+const PurchaseHistory = () => {
   return (
     <div className="flex">
       {/* Sidebar - ajustée à une largeur plus petite */}
@@ -19,4 +19,4 @@ const HistoryPurchase = () => {
 };
 
 
-export default HistoryPurchase;
+export default PurchaseHistory;

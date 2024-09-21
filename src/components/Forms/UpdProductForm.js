@@ -163,7 +163,7 @@ const UpdProduct = () => {
   };
 
   const handleBackToList = () => {
-    navigate('/ListProduct');
+    navigate('/products-list');
   };
 
   const handleSubmit = async (e) => {
@@ -182,7 +182,7 @@ const UpdProduct = () => {
         setSuccess(true);
         console.log('Produit ajouté:', productData);
       }
-      navigate(`/ListProduct`);
+      navigate(`/products-list`);
     } catch (error) {
       console.error('Erreur lors de l\'ajout ou de la mise à jour du produit:', error);
       setError('Une erreur est survenue lors de la soumission du produit.');

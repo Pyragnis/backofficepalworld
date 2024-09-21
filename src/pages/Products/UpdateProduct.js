@@ -1,6 +1,6 @@
 import React from 'react';
-import Sidebar from '../components/sidebar';
-import UpdProduct from '../components/UpdProduct';
+import Sidebar from '../../components/sidebar';
+import UpdProduct from '../../components/Forms/UpdProductForm';
 
 const UpdateProduct = () => {
   return (

@@ -9,7 +9,7 @@ const LoginForm = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (email === 'admin' && password === 'admin') {
-      navigate('/home'); 
+      navigate('/dashboard'); 
     } else {
       console.log('Email ou mot de passe incorrect');
     }

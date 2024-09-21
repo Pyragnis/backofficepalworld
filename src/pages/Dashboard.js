@@ -1,7 +1,7 @@
 import React from 'react';
 import Sidebar from '../components/sidebar';
 
-const Home = () => {
+const Dashboard = () => {
   return (
     <div className="flex min-h-screen bg-gray-100">
       {/* Sidebar */}
@@ -29,4 +29,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default Dashboard;
