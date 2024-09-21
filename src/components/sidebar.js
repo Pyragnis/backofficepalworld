@@ -11,7 +11,7 @@ const Sidebar = () => {
   };
 
   return (
-    <div className="flex h-screen">
+    <div>
       {/* Bouton d'ouverture pour le menu mobile */}
       <button
         onClick={toggleSidebar}
@@ -22,9 +22,9 @@ const Sidebar = () => {
 
       {/* Sidebar */}
       <div
-        className={`fixed top-0 left-0 h-full bg-gray-900 text-white transform ${
+        className={`fixed top-0 left-0 h-full w-64 bg-gray-900 text-white transform ${
           isOpen ? 'translate-x-0' : '-translate-x-full'
-        } lg:translate-x-0 lg:relative lg:flex flex-col w-64 transition-transform duration-300 z-40`}
+        } lg:translate-x-0 transition-transform duration-300 z-40`}
       >
         {/* Logo Section */}
         <div className="flex items-center justify-center h-20 border-b border-gray-700">

@@ -1,9 +1,6 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
 import Sidebar from '../components/sidebar';
 import UpdProduct from '../components/UpdProduct';
-
-
 
 const UpdateProduct = () => {
   return (
