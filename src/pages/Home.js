@@ -1,35 +1,31 @@
+// Home.js
 import React from 'react';
 import Sidebar from '../components/sidebar';
-import logo from '../assets/logos/logo-rond.png';
 
 const Home = () => {
   return (
-    <div className="flex">
-      <div className="w-60">
-        <Sidebar />
-      </div>
+    <div className="flex min-h-screen bg-gray-100">
+      {/* Sidebar */}
+      <Sidebar />
 
-      {/* Section principale */}
-      <div className="flex-1 p-6">
-        <h1 className="text-4xl font-bold mb-4">Bienvenue dans votre tableau de bord</h1>
-        <p className="text-lg text-gray-700 mb-6">
-          Ici, vous pouvez gérer vos produits, consulter l'historique de vos commandes, et bien plus encore.
-        </p>
+      {/* Contenu principal */}
+      <main className="flex-1 p-8">
+        <section className="max-w-4xl mx-auto">
+          <h1 className="text-4xl font-bold mb-6 text-gray-800">Bienvenue sur votre tableau de bord</h1>
+          <p className="text-gray-600 mb-8">
+            Ici, vous pouvez gérer vos produits, consulter l'historique de vos commandes, et bien plus encore. Utilisez le menu à gauche pour naviguer à travers les différentes fonctionnalités de votre tableau de bord.
+          </p>
 
-        <div className="bg-white p-6 rounded-lg shadow-lg mb-6">
-          <h2 className="text-2xl font-bold mb-4">Astuces et conseils</h2>
-          <ul className="list-disc pl-5 space-y-2">
-            <li>Ajoutez de nouveaux produits pour enrichir votre catalogue.</li>
-            <li>Consultez l'historique des commandes pour suivre vos ventes.</li>
-            <li>Utilisez la barre de navigation pour accéder rapidement aux différentes sections.</li>
-          </ul>
-
-          {/* Logo sous le texte mais dans la même div */}
-          <div className="flex justify-center mt-8">
-            <img src={logo} alt="Logo" className="w-50 h-auto" /> {/* Logo plus grand */}
+          <div className="bg-white p-6 rounded-lg shadow-md">
+            <h2 className="text-2xl font-semibold mb-4 text-gray-700">Astuces et conseils</h2>
+            <ul className="list-disc list-inside space-y-3">
+              <li>Ajoutez régulièrement de nouveaux produits pour enrichir votre catalogue.</li>
+              <li>Consultez l'historique des commandes pour suivre vos ventes et améliorer votre service client.</li>
+              <li>Utilisez la barre de navigation pour accéder rapidement aux différentes sections de l'application.</li>
+            </ul>
           </div>
-        </div>
-      </div>
+        </section>
+      </main>
     </div>
   );
 };
