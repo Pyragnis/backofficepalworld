@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import ConfirmationModal from '../modals/ConfirmationModal';
 import EditCategoryModal from '../modals/EditCategoryModal';
+import Pagination from './Pagination';
 
 const capitalizeFirstLetter = (string) => {
   return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
@@ -11,17 +12,14 @@ const CategoryList = ({ categories, onDelete, onEdit }) => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(null);
 
-  // Pagination states
   const [currentPage, setCurrentPage] = useState(1);
   const categoriesPerPage = 12;
 
-  // Calculer les catégories à afficher pour la page actuelle
   const indexOfLastCategory = currentPage * categoriesPerPage;
   const indexOfFirstCategory = indexOfLastCategory - categoriesPerPage;
   const currentCategories = categories.slice(indexOfFirstCategory, indexOfLastCategory);
 
-  // Fonction de changement de page
-  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+  const handlePageChange = (pageNumber) => setCurrentPage(pageNumber);
 
   const totalPages = Math.ceil(categories.length / categoriesPerPage);
 
@@ -38,6 +36,10 @@ const CategoryList = ({ categories, onDelete, onEdit }) => {
   const handleConfirmDelete = () => {
     if (selectedCategory) {
       onDelete(selectedCategory._id);
+
+      if (currentCategories.length === 1 && currentPage > 1) {
+        setCurrentPage(currentPage - 1);
+      }
     }
     setIsModalOpen(false);
   };
@@ -86,17 +88,11 @@ const CategoryList = ({ categories, onDelete, onEdit }) => {
       </table>
 
       {/* Pagination */}
-      <div className="flex justify-center mt-4">
-        {Array.from({ length: totalPages }, (_, index) => index + 1).map((pageNumber) => (
-          <button
-            key={pageNumber}
-            onClick={() => paginate(pageNumber)}
-            className={`mx-1 px-3 py-1 rounded ${currentPage === pageNumber ? 'bg-sky-600 text-white hover:bg-sky-700' : 'bg-gray-300 text-gray-700 hover:bg-gray-400'}`}
-          >
-            {pageNumber}
-          </button>
-        ))}
-      </div>
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={handlePageChange}
+      />
 
       {/* Modal de confirmation de suppression */}
       <ConfirmationModal

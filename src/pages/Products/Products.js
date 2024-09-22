@@ -12,9 +12,8 @@ const ListProduct = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const productsPerPage = 8;
-  const productCache = useRef({}); // Utilisation d'un cache pour les produits
+  const productCache = useRef({});
 
-  // Fonction pour récupérer les produits
   const fetchProducts = async (page = 1) => {
     // Vérification du cache avant l'appel de l'API
     if (productCache.current[`${category}-${page}`]) {
@@ -32,7 +31,6 @@ const ListProduct = () => {
         params: { category, page, limit: productsPerPage },
       });
       
-      // Mise en cache des données de la page actuelle
       productCache.current[`${category}-${page}`] = response.data;
       setProducts(response.data.products || []);
       setTotalPages(response.data.totalPages || 1);
@@ -44,26 +42,21 @@ const ListProduct = () => {
     }
   };
 
-  // Optimisation avec useEffect pour récupérer les produits lorsque la catégorie ou la page change
   useEffect(() => {
     fetchProducts(currentPage);
   }, [category, currentPage]);
 
-  // Gestion du changement de page
   const handlePageChange = (newPage) => {
     if (newPage > 0 && newPage <= totalPages) {
       setCurrentPage(newPage);
     }
   };
 
-  // Fonction de suppression du produit
   const handleDelete = async (id) => {
     try {
       await axios.delete(`http://localhost:${process.env.REACT_APP_PORT_BDD_API}/api/products/${id}`);
-      // Rafraîchir la liste des produits après suppression
       setProducts((prevProducts) => prevProducts.filter((product) => product._id !== id));
-      
-      // Rafraîchir la page si aucun produit n'est disponible sur la page actuelle
+
       if (products.length === 1 && currentPage > 1) {
         handlePageChange(currentPage - 1);
       }
@@ -72,7 +65,6 @@ const ListProduct = () => {
     }
   };
 
-  // Fonction d'édition du produit
   const handleEdit = (id) => {
     navigate(`/update-product/${id}`);
   };

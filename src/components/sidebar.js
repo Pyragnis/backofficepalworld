@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import logo from '../assets/logos/logo-rond.png';
-import { FaBars, FaTimes, FaHome, FaPlus, FaList, FaHistory, FaExternalLinkAlt, FaSortAlphaDown, FaUsers } from 'react-icons/fa';
+import { FaBars, FaTimes, FaPlus, FaList, FaHistory, FaExternalLinkAlt, FaSortAlphaDown, FaUsers } from 'react-icons/fa';
+import { RiDashboardFill } from "react-icons/ri";
+
 
 const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -38,7 +40,7 @@ const Sidebar = () => {
             className="flex items-center hover:bg-gray-700 p-3 rounded transition-colors"
             onClick={toggleSidebar}
           >
-            <FaHome className="mr-3" /> Dashboard
+            <RiDashboardFill  className="mr-3" /> Dashboard
           </Link>
           <Link
             to="/users"

@@ -1,16 +1,13 @@
-// OrderDetailsModal.js
 import React from 'react';
 
 const OrderDetailsModal = ({ isOpen, onClose, order }) => {
   if (!isOpen || !order) return null;
 
-  // Troncature de l'ID de la commande
   const orderNumber = order._id.substring(0, 8);
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
       <div className="bg-white p-8 rounded-lg shadow-lg w-11/12 md:w-2/3 lg:w-1/2">
-        {/* Titre du modal avec l'ID de commande tronqué */}
         <h2 className="text-2xl font-bold mb-4 text-center text-sky-600">Détails de la commande #{orderNumber}</h2>
 
         {/* Informations générales de la commande */}

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import ProductCard from './ProductCard';
 import axios from 'axios';
+import Pagination from '../../components/Pagination';
 
 const ProductList = ({ products, currentPage, totalPages, onPageChange, onDelete, onEdit }) => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -20,9 +21,9 @@ const ProductList = ({ products, currentPage, totalPages, onPageChange, onDelete
       }
     };
 
-    const debounceTimeout = setTimeout(fetchSearchedProducts, 500); // Délais de 500ms
+    const debounceTimeout = setTimeout(fetchSearchedProducts, 500);
 
-    return () => clearTimeout(debounceTimeout); // Nettoyer le délai
+    return () => clearTimeout(debounceTimeout);
   }, [searchQuery, products]);
 
   return (
@@ -59,35 +60,11 @@ const ProductList = ({ products, currentPage, totalPages, onPageChange, onDelete
       </div>
 
       {/* Pagination améliorée */}
-      {totalPages > 1 && (
-        <div className="mt-6 flex justify-center space-x-2">
-          <button
-            onClick={() => onPageChange(currentPage - 1)}
-            disabled={currentPage === 1}
-            className="px-4 py-2 mx-1 bg-gray-200 text-gray-600 rounded-lg disabled:opacity-50"
-          >
-            Précédent
-          </button>
-          {Array.from({ length: totalPages }, (_, index) => (
-            <button
-              key={index}
-              onClick={() => onPageChange(index + 1)}
-              className={`px-4 py-2 mx-1 border rounded-lg ${
-                index + 1 === currentPage ? 'bg-sky-600 text-white' : 'bg-gray-200 text-gray-700'
-              } hover:bg-sky-500 hover:text-white transition-colors duration-300`}
-            >
-              {index + 1}
-            </button>
-          ))}
-          <button
-            onClick={() => onPageChange(currentPage + 1)}
-            disabled={currentPage === totalPages}
-            className="px-4 py-2 mx-1 bg-gray-200 text-gray-600 rounded-lg disabled:opacity-50"
-          >
-            Suivant
-          </button>
-        </div>
-      )}
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={onPageChange}
+      />
     </div>
   );
 };

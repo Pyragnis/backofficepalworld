@@ -7,9 +7,9 @@ import AddCategoryModal from '../../modals/AddCategoryModal';
 
 const Categories = () => {
   const [categories, setCategories] = useState([]);
+  const [filteredCategories, setFilteredCategories] = useState([]); 
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
-  const [currentPage, setCurrentPage] = useState(1);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false); 
@@ -19,6 +19,7 @@ const Categories = () => {
       setLoading(true);
       const response = await axios.get(`http://localhost:${process.env.REACT_APP_PORT_BDD_API}/api/category`);
       setCategories(response.data);
+      setFilteredCategories(response.data); 
     } catch (error) {
       console.error('Erreur lors de la récupération des catégories:', error);
     } finally {
@@ -45,6 +46,7 @@ const Categories = () => {
         name: newCategory.name,
       });
       setCategories((prevCategories) => [...prevCategories, response.data]);
+      setFilteredCategories((prevCategories) => [...prevCategories, response.data]);
       setIsAddModalOpen(false);
       showAlert('Catégorie ajoutée avec succès');
     } catch (error) {
@@ -63,6 +65,11 @@ const Categories = () => {
           category._id === updatedCategory._id ? { ...category, name: updatedCategory.name } : category
         )
       );
+      setFilteredCategories((prevCategories) =>
+        prevCategories.map((category) =>
+          category._id === updatedCategory._id ? { ...category, name: updatedCategory.name } : category
+        )
+      );
       setIsEditModalOpen(false);
       showAlert('Catégorie mise à jour avec succès');
     } catch (error) {
@@ -75,21 +82,28 @@ const Categories = () => {
     try {
       await axios.delete(`http://localhost:${process.env.REACT_APP_PORT_BDD_API}/api/category/${id}`);
       setCategories((prevCategories) => prevCategories.filter((category) => category._id !== id));
+      setFilteredCategories((prevCategories) => prevCategories.filter((category) => category._id !== id));
       showAlert('Catégorie supprimée avec succès');
     } catch (error) {
       console.error('Erreur lors de la suppression de la catégorie:', error);
       showAlert('Erreur lors de la suppression de la catégorie', 'error');
     }
   };
-  
-  const filteredCategories = categories.filter((category) =>
-    category.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
 
   useEffect(() => {
     fetchCategories();
-    setCurrentPage(1); 
   }, []);
+
+  useEffect(() => {
+    const debounceTimeout = setTimeout(() => {
+      const filtered = categories.filter((category) =>
+        category.name.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+      setFilteredCategories(filtered);
+    }, 300);
+
+    return () => clearTimeout(debounceTimeout);
+  }, [searchQuery, categories]);
 
   return (
     <div className="flex flex-col md:flex-row">
@@ -113,10 +127,10 @@ const Categories = () => {
         </div>
 
         <button
-            onClick={() => setIsAddModalOpen(true)}
-            className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition duration-300 mb-4 w-full md:w-auto"
-          >
-            Ajouter une catégorie
+          onClick={() => setIsAddModalOpen(true)}
+          className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition duration-300 mb-4 w-full md:w-auto"
+        >
+          Ajouter une catégorie
         </button>
 
         {loading ? (

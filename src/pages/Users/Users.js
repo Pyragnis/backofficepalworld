@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Sidebar from '../../components/sidebar';
 import UsersList from '../../components/UsersList';
+import Pagination from '../../components/Pagination';
 
 const Users = () => {
   const [users, setUsers] = useState([]);
@@ -10,6 +11,7 @@ const Users = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const usersPerPage = 12;
 
+  // Fonction pour récupérer les utilisateurs
   const fetchUsers = async () => {
     try {
       setLoading(true);
@@ -22,30 +24,42 @@ const Users = () => {
     }
   };
 
+  // Ajout d'un débouncer pour la recherche
+  useEffect(() => {
+    const delayDebounceFn = setTimeout(() => {
+      setCurrentPage(1);
+    }, 300);
+
+    return () => clearTimeout(delayDebounceFn);
+  }, [searchQuery]);
+
+  useEffect(() => {
+    fetchUsers();
+  }, []);
+
+  // Filtrer les utilisateurs en fonction de la requête de recherche
   const filteredUsers = users.filter((user) => {
-    const userFirstName = user.firstName ? user.firstName.toLowerCase() : '';
-    const userLastName = user.lastName ? user.lastName.toLowerCase() : '';
-    const userFullName = user.fullName ? user.fullName.toLowerCase() : '';
-    const userEmail = user.email ? user.email.toLowerCase() : '';
-    
+    const searchLower = searchQuery.toLowerCase();
     return (
-      userFirstName.includes(searchQuery.toLowerCase()) ||
-      userLastName.includes(searchQuery.toLowerCase()) ||
-      userFullName.includes(searchQuery.toLowerCase()) ||
-      userEmail.includes(searchQuery.toLowerCase())
+      (user.firstName && user.firstName.toLowerCase().includes(searchLower)) ||
+      (user.lastName && user.lastName.toLowerCase().includes(searchLower)) ||
+      (user.fullName && user.fullName.toLowerCase().includes(searchLower)) ||
+      (user.email && user.email.toLowerCase().includes(searchLower))
     );
   });
 
+  // Pagination logic
   const indexOfLastUser = currentPage * usersPerPage;
   const indexOfFirstUser = indexOfLastUser - usersPerPage;
   const currentUsers = filteredUsers.slice(indexOfFirstUser, indexOfLastUser);
   const totalPages = Math.ceil(filteredUsers.length / usersPerPage);
 
-  const paginate = (pageNumber) => setCurrentPage(pageNumber);
-
-  useEffect(() => {
-    fetchUsers();
-  }, []);
+  // Gestion du changement de page
+  const paginate = (pageNumber) => {
+    if (pageNumber > 0 && pageNumber <= totalPages) {
+      setCurrentPage(pageNumber);
+    }
+  };
 
   return (
     <div className="flex flex-col md:flex-row">
@@ -61,10 +75,7 @@ const Users = () => {
             type="text"
             placeholder="Rechercher un utilisateur par nom ou email"
             value={searchQuery}
-            onChange={(e) => {
-              setSearchQuery(e.target.value);
-              setCurrentPage(1);
-            }}
+            onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full p-2 border border-gray-300 rounded-md"
           />
         </div>
@@ -76,19 +87,11 @@ const Users = () => {
             <UsersList users={currentUsers} />
 
             {/* Pagination */}
-            <div className="flex justify-center flex-wrap mt-4">
-              {Array.from({ length: totalPages }, (_, index) => index + 1).map((pageNumber) => (
-                <button
-                  key={pageNumber}
-                  onClick={() => paginate(pageNumber)}
-                  className={`mx-1 px-3 py-1 rounded mb-2 ${
-                    currentPage === pageNumber ? 'bg-sky-600 text-white hover:bg-sky-600' : 'bg-gray-300 text-gray-700 hover:bg-gray-400'
-                  }`}
-                >
-                  {pageNumber}
-                </button>
-              ))}
-            </div>
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={paginate}
+            />
           </>
         )}
       </div>

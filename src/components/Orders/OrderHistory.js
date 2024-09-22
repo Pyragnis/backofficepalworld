@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import Pagination from '../../components/Pagination';
 
 const OrderHistory = () => {
   const [orders, setOrders] = useState([]);
@@ -10,8 +11,6 @@ const OrderHistory = () => {
   const [users, setUsers] = useState({});
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
-
-  const visiblePageLimit = 5;
 
   const fetchUserInfo = async (userId) => {
     try {
@@ -51,6 +50,19 @@ const OrderHistory = () => {
     fetchOrders();
   }, []);
 
+  useEffect(() => {
+    const debounceTimeout = setTimeout(() => {
+      if (searchQuery.trim().length >= 2) {
+        const results = orders.filter(order => order._id.toLowerCase().includes(searchQuery.toLowerCase()));
+        setSearchResults(results);
+      } else {
+        setSearchResults([]);
+      }
+    }, 300);
+
+    return () => clearTimeout(debounceTimeout);
+  }, [searchQuery, orders]);
+
   const handleSearch = async () => {
     if (searchQuery.length < 2) {
       alert('Veuillez entrer au moins 2 caractères pour effectuer une recherche.');
@@ -79,10 +91,6 @@ const OrderHistory = () => {
       setCurrentPage(pageNumber);
     }
   };
-
-  // Déterminer la plage des pages à afficher
-  const startPage = Math.max(1, currentPage - Math.floor(visiblePageLimit / 2));
-  const endPage = Math.min(totalPages, startPage + visiblePageLimit - 1);
 
   return (
     <div className="p-6 bg-gray-100 min-h-screen">
@@ -258,51 +266,11 @@ const OrderHistory = () => {
       )}
 
       {/* Pagination */}
-      {totalPages > 1 && searchResults.length === 0 && (
-        <div className="mt-6 flex justify-center space-x-2">
-          <button
-            onClick={() => handlePageChange(currentPage - 1)}
-            disabled={currentPage === 1}
-            className="px-4 py-2 mx-1 bg-gray-200 text-gray-600 rounded-lg disabled:opacity-50"
-          >
-            Précédent
-          </button>
-
-          {startPage > 1 && (
-            <button className="px-3 py-1 mx-1 border rounded-lg bg-gray-200 text-gray-700" onClick={() => handlePageChange(1)}>
-              1
-            </button>
-          )}
-          {startPage > 2 && <span className="px-3 py-1">...</span>}
-
-          {Array.from({ length: endPage - startPage + 1 }, (_, index) => startPage + index).map((pageNumber) => (
-            <button
-              key={pageNumber}
-              onClick={() => handlePageChange(pageNumber)}
-              className={`px-3 py-1 mx-1 border rounded-lg ${
-                pageNumber === currentPage ? 'bg-sky-600 text-white' : 'bg-gray-200 text-gray-700'
-              } hover:bg-sky-500 hover:text-white transition-colors duration-300`}
-            >
-              {pageNumber}
-            </button>
-          ))}
-
-          {endPage < totalPages - 1 && <span className="px-3 py-1">...</span>}
-          {endPage < totalPages && (
-            <button className="px-3 py-1 mx-1 border rounded-lg bg-gray-200 text-gray-700" onClick={() => handlePageChange(totalPages)}>
-              {totalPages}
-            </button>
-          )}
-
-          <button
-            onClick={() => handlePageChange(currentPage + 1)}
-            disabled={currentPage === totalPages}
-            className="px-4 py-2 mx-1 bg-gray-200 text-gray-600 rounded-lg disabled:opacity-50"
-          >
-            Suivant
-          </button>
-        </div>
-      )}
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={handlePageChange}
+      />
     </div>
   );
 };
