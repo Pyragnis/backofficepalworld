@@ -196,7 +196,7 @@ const ListProduct = () => {
     },
     {
       header: (
-        <div className="flex items-center cursor-pointer" onClick={() => handleSort('name')}>
+        <div className="flex items-center cursor-pointer">
           Nom du produit
         </div>
       ),
@@ -227,7 +227,7 @@ const ListProduct = () => {
       render: (product) => (product.discountPrice || product.price).toFixed(2),
     },
     {
-      header: 'Prix Ancien (€)',
+      header: 'Ancien prix (€)',
       accessor: 'oldPrice',
       render: (product) => (product.discountPrice ? product.price.toFixed(2) : 'N/A'),
     }, 

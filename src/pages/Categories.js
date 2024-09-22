@@ -297,6 +297,8 @@ const Categories = () => {
               columns={columns}
               data={filteredCategories}
               actions={actions}
+              onSort={handleSort}
+              sortConfig={sortConfig}
             />
             {totalPages > 1 && (
               <Pagination
