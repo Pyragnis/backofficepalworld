@@ -18,7 +18,7 @@ const UserOrders = () => {
   const ordersPerPage = 12;
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
-  const [sortConfig, setSortConfig] = useState({ key: 'createdAt', direction: 'asc' }); // Ajout de l'état de tri
+  const [sortConfig, setSortConfig] = useState({ key: 'createdAt', direction: 'asc' });
 
   const totalPages = Math.ceil(orders.length / ordersPerPage);
 

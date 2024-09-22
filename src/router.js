@@ -7,7 +7,7 @@ import AddProduct from './pages/Products/AddProduct.js';
 import UpdateProduct from './pages/Products/UpdateProduct.js';
 import PurchaseHistory from './pages/PurchaseHistory';
 import ProductList from './pages/Products/Products.js';
-import Categories from './pages/Categories/Categories.js';
+import Categories from './pages/Categories.js';
 import Users from './pages/Users/Users.js';
 import UserOrders from './pages/Users/UserOrders.js';
 

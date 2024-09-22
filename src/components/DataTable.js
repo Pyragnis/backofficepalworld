@@ -19,10 +19,18 @@ const DataTable = ({ columns, data, actions, onSort, sortConfig }) => {
                     <span className="ml-1 flex">
                       {/* Afficher les deux flèches ensemble */}
                       <AiOutlineArrowUp
-                        className={`ml-1 ${sortConfig.key === col.accessor && sortConfig.direction === 'asc' ? 'text-black' : 'text-gray-400'}`}
+                        className={`ml-1 ${
+                          sortConfig && sortConfig.key === col.accessor && sortConfig.direction === 'asc'
+                            ? 'text-black'
+                            : 'text-gray-400'
+                        }`}
                       />
                       <AiOutlineArrowDown
-                        className={`ml-1 ${sortConfig.key === col.accessor && sortConfig.direction === 'desc' ? 'text-black' : 'text-gray-400'}`}
+                        className={`ml-1 ${
+                          sortConfig && sortConfig.key === col.accessor && sortConfig.direction === 'desc'
+                            ? 'text-black'
+                            : 'text-gray-400'
+                        }`}
                       />
                     </span>
                   )}

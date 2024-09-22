@@ -47,7 +47,7 @@ const Sidebar = () => {
             className="flex items-center hover:bg-gray-700 p-3 rounded transition-colors"
             onClick={toggleSidebar}
           >
-            <FaUsers  className="mr-3" /> Liste des utilisateurs
+            <FaUsers  className="mr-3" /> Utilisateurs
           </Link>
           <Link
             to="/categories"
@@ -68,14 +68,14 @@ const Sidebar = () => {
             className="flex items-center hover:bg-gray-700 p-3 rounded transition-colors"
             onClick={toggleSidebar}
           >
-            <FaList className="mr-3" /> Liste des produits
+            <FaList className="mr-3" /> Produits
           </Link>
           <Link
             to="/purchase-history"
             className="flex items-center hover:bg-gray-700 p-3 rounded transition-colors"
             onClick={toggleSidebar}
           >
-            <FaHistory className="mr-3" /> Historique de commande
+            <FaHistory className="mr-3" /> Historique des commandes
           </Link>
           {/* Nouveau lien externe avec icône */}
           <a
