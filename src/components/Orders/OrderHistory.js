@@ -33,7 +33,9 @@ const OrderHistory = () => {
           const userId = typeof order.userId === 'object' ? order.userId._id : order.userId;
           if (userId && !usersInfo[userId]) {
             const userInfo = await fetchUserInfo(userId);
-            usersInfo[userId] = userInfo;
+            if (userInfo) {
+              usersInfo[userId] = userInfo;
+            }
           }
         }
   
@@ -49,6 +51,7 @@ const OrderHistory = () => {
   
     fetchOrders();
   }, []);
+  
 
   useEffect(() => {
     const debounceTimeout = setTimeout(() => {
@@ -120,7 +123,7 @@ const OrderHistory = () => {
       {searchResults.length > 0 ? (
         <div className="mt-6">
           <h3 className="text-xl font-semibold mb-4">Résultat de la recherche :</h3>
-          <div className="bg-white shadow-md rounded-lg p-6">
+          <div  className="bg-white shadow-md rounded-lg p-6">
             <h3 className="text-xl font-semibold mb-2 text-sky-600">Commande #{searchResults[0]._id.substring(0, 8)}</h3>
             <p>Date : {new Date(searchResults[0].createdAt).toLocaleDateString()}</p>
             <p>Montant Total : €{searchResults[0].totalAmount.toFixed(2)}</p>
@@ -160,6 +163,21 @@ const OrderHistory = () => {
                       <p className="font-semibold">{item.productId?.name || 'Produit acheté'}</p>
                       <p>Quantité : {item.quantity}</p>
                       <p>Prix : €{item.price.toFixed(2)}</p>
+
+                      {/* Affichage des options de personnalisation */}
+                      {item.customizationOptions.length > 0 && (
+                        <div className="mt-2">
+                          <h5 className="font-semibold">Options de personnalisation :</h5>
+                          <ul className="ml-4 list-none">
+                            {item.customizationOptions.map((option, index) => (
+                              <li key={index}>
+                                <p>Position : {option.position}</p>
+                                <p>Taille de personnalisation : {option.customizationSize}</p>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
 
                       {item.isTokenPurchase && (
                         <p className="text-green-500 font-semibold">
