@@ -1,20 +1,42 @@
 import React from 'react';
+import { AiOutlineClose } from 'react-icons/ai'; // Icône pour le bouton de fermeture
 
 const OrderDetailsModal = ({ isOpen, onClose, order }) => {
   if (!isOpen || !order) return null;
 
   const orderNumber = order._id.substring(0, 8);
+  const user = order.userId; // Récupérer les informations de l'utilisateur
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-      <div className="bg-white p-8 rounded-lg shadow-lg w-11/12 md:w-2/3 lg:w-1/2">
-        <h2 className="text-2xl font-bold mb-4 text-center text-sky-600">Détails de la commande #{orderNumber}</h2>
+      <div className="relative bg-white p-6 rounded-lg shadow-lg w-11/12 md:w-3/4 lg:w-1/2 max-h-[90vh] overflow-y-auto">
+        {/* Bouton de fermeture en haut à droite */}
+        <button
+          onClick={onClose}
+          className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 transition duration-300"
+        >
+          <AiOutlineClose size={24} />
+        </button>
+
+        {/* Titre du modal */}
+        <h2 className="text-2xl font-bold mb-4 text-center text-sky-600">
+          Détails de la commande #{orderNumber}
+        </h2>
 
         {/* Informations générales de la commande */}
         <div className="mb-6">
           <p className="mb-1"><strong>Date de commande :</strong> {new Date(order.createdAt).toLocaleDateString()}</p>
           <p className="mb-1"><strong>Montant total :</strong> <span className="text-green-600">€{order.totalAmount.toFixed(2)}</span></p>
         </div>
+
+        {/* Informations de l'utilisateur */}
+        {user && (
+          <div className="mb-6 bg-gray-50 p-4 rounded-md shadow-sm">
+            <h3 className="text-lg font-semibold text-sky-600 mb-2">Informations de l'utilisateur :</h3>
+            <p className="mb-1"><strong>Nom :</strong> {user.firstName} {user.lastName}</p>
+            <p className="mb-1"><strong>Email :</strong> {user.email}</p>
+          </div>
+        )}
 
         {/* Détails des articles commandés */}
         <h3 className="mt-4 mb-2 text-lg font-semibold text-sky-600">Articles commandés :</h3>
