@@ -202,7 +202,18 @@ const ListProduct = () => {
       ),
       accessor: 'name',
       sortable: true,
+      render: (product) => (
+        <a
+          href={`http://localhost:${process.env.REACT_APP_PORT_FRONT}/product/${product._id}`}
+          target="_blank"
+          rel="noopener noreferrer" 
+          className="font-normal hover:underline hover:text-sky-600"
+        >
+          {product.name.charAt(0).toUpperCase() + product.name.slice(1)}
+        </a>
+      ),
     },
+    
     {
       header: 'Catégorie',
       accessor: 'category',
