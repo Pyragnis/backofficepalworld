@@ -147,7 +147,7 @@ const Users = () => {
       </div>
       <div className="flex-1 p-4 md:p-6">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl md:text-2xl font-bold">Utilisateurs</h2>
+          <h2 className="text-xl md:text-2xl font-bold">Utilisateurs ({filteredUsers.length})</h2>
           <AiOutlineReload 
             onClick={fetchUsers} 
             className="text-gray-500 hover:text-gray-700 cursor-pointer text-2xl" 
