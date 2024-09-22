@@ -5,6 +5,7 @@ import axios from 'axios';
 import Pagination from '../../components/Pagination';
 import DataTable from '../../components/DataTable';
 import ConfirmationModal from '../../modals/ConfirmationModal';
+import { useAlert } from '../../context/AlertContext';
 import { AiOutlinePlus, AiOutlineSearch } from 'react-icons/ai';
 import { BiLoaderCircle } from 'react-icons/bi';
 import { MdDelete, MdEdit } from "react-icons/md";
@@ -14,6 +15,7 @@ const ListProduct = () => {
   const [products, setProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]); 
   const [categories, setCategories] = useState([]);
+  const { showAlert } = useAlert();
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -97,8 +99,10 @@ const ListProduct = () => {
         handlePageChange(currentPage - 1);
       }
       setIsConfirmationModalOpen(false);
+      showAlert('Catégories supprimée avec succès', 'success');
     } catch (error) {
       console.error('Erreur lors de la suppression du produit:', error);
+      showAlert('Erreur lors de la suppression des catégorie', 'error');
     }
   };
 
@@ -110,8 +114,10 @@ const ListProduct = () => {
       setProducts((prevProducts) => prevProducts.filter((product) => !selectedProducts.includes(product._id)));
       setSelectedProducts([]);
       setIsConfirmationModalOpen(false);
+      showAlert('Catégories supprimées avec succès', 'success');
     } catch (error) {
       console.error('Erreur lors de la suppression de plusieurs produits:', error);
+      showAlert('Erreur lors de la suppression de la catégorie', 'error');
     }
   };
 

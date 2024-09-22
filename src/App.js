@@ -1,9 +1,12 @@
 import './App.css';
 import AppRouter from './router';
+import { AlertProvider } from './context/AlertContext';
 
 function App() {
   return (
-    <AppRouter />
+    <AlertProvider>
+      <AppRouter />
+    </AlertProvider>
   );
 }
 

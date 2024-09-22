@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import Sidebar from '../components/sidebar';
 import axios from 'axios';
 import Pagination from '../components/Pagination';
@@ -6,6 +6,7 @@ import ConfirmationModal from '../modals/ConfirmationModal';
 import EditCategoryModal from '../modals/EditCategoryModal';
 import AddCategoryModal from '../modals/AddCategoryModal';
 import DataTable from '../components/DataTable';
+import { useAlert } from '../context/AlertContext';
 import { AiOutlineSearch, AiOutlinePlus } from 'react-icons/ai';
 import { BiLoaderCircle } from 'react-icons/bi';
 import { MdDelete, MdEdit } from "react-icons/md";
@@ -14,6 +15,7 @@ const Categories = () => {
   const [categories, setCategories] = useState([]);
   const [filteredCategories, setFilteredCategories] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { showAlert } = useAlert();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -71,10 +73,10 @@ const Categories = () => {
       const response = await axios.post(`http://localhost:${process.env.REACT_APP_PORT_BDD_API}/api/category`, newCategory);
       setCategories((prevCategories) => [...prevCategories, response.data]);
       setIsAddModalOpen(false);
-      alert('Catégorie ajoutée avec succès');
+      showAlert('Catégorie ajoutée avec succès', 'success');
     } catch (error) {
       console.error('Erreur lors de l\'ajout de la catégorie:', error);
-      alert('Erreur lors de l\'ajout de la catégorie');
+      showAlert('Erreur lors de l\'ajout de la catégorie', 'error');
     }
   };
 
@@ -88,10 +90,10 @@ const Categories = () => {
         )
       );
       setIsEditModalOpen(false);
-      alert('Catégorie mise à jour avec succès');
+      showAlert('Catégorie mise à jour avec succès', 'success');
     } catch (error) {
       console.error('Erreur lors de la mise à jour de la catégorie:', error);
-      alert('Erreur lors de la mise à jour de la catégorie');
+      showAlert('Erreur lors de la mise à jour de la catégorie', 'error');
     }
   };
 
@@ -103,7 +105,6 @@ const Categories = () => {
       
       setCategories(updatedCategories);
 
-      // Si la page actuelle devient vide après la suppression, revenir à la page 1
       if ((updatedCategories.length <= (currentPage - 1) * categoriesPerPage) && currentPage > 1) {
         setCurrentPage(currentPage - 1);
       } else {
@@ -111,10 +112,10 @@ const Categories = () => {
       }
 
       setIsConfirmationModalOpen(false);
-      alert('Catégorie supprimée avec succès');
+      showAlert('Catégories supprimée avec succès', 'success');
     } catch (error) {
       console.error('Erreur lors de la suppression de la catégorie:', error);
-      alert('Erreur lors de la suppression de la catégorie');
+      showAlert('Erreur lors de la suppression des catégorie', 'error');
     }
   };
 
@@ -136,10 +137,10 @@ const Categories = () => {
 
       setSelectedCategories([]);
       setIsMultiDeleteModalOpen(false);
-      alert('Catégories supprimées avec succès');
+      showAlert('Catégories supprimées avec succès', 'success');
     } catch (error) {
       console.error('Erreur lors de la suppression de plusieurs catégories:', error);
-      alert('Erreur lors de la suppression de plusieurs catégories');
+      showAlert('Erreur lors de la suppression de la catégorie', 'error');
     }
   };
 

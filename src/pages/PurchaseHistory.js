@@ -85,7 +85,7 @@ const PurchaseHistory = () => {
 
   const columns = [
     {
-      header: 'N° de Commande',
+      header: 'N° de commande',
       accessor: '_id',
       render: (order) => `#${order._id.substring(0, 8)}`,
       sortable: false,
@@ -97,7 +97,7 @@ const PurchaseHistory = () => {
       sortable: true,
     },
     {
-      header: 'Montant Total (€)',
+      header: 'Montant total (€)',
       accessor: 'totalAmount',
       render: (order) => `€${order.totalAmount.toFixed(2)}`,
       sortable: false,
